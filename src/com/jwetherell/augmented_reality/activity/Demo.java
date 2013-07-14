@@ -5,11 +5,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.data.*;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
@@ -84,7 +81,7 @@ public class Demo extends AugmentedReality {
 
     /**
      * {@inheritDoc}
-     */
+     *//*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.v(TAG, "onOptionsItemSelected() item=" + item);
@@ -103,7 +100,7 @@ public class Demo extends AugmentedReality {
                 break;
         }
         return true;
-    }
+    }*/
 
     /**
      * {@inheritDoc}
