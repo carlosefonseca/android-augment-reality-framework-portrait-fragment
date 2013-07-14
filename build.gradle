@@ -6,7 +6,19 @@ buildscript {
         classpath 'com.android.tools.build:gradle:0.5.+'
     }
 }
-apply plugin: 'android'
+apply plugin: 'android-library'
+
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file:///Users/carlos/Beware/_/android-augment-reality-framework/mvn-repo")
+            pom.version = "carlosefonseca-1.1.1"
+            pom.groupId = "com.jwetherell"
+        }
+    }
+}
 
 tasks.withType(Compile) {
     options.encoding = "UTF-8"

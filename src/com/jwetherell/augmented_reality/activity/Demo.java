@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.jwetherell.augmented_reality.data.*;
 import com.jwetherell.augmented_reality.ui.Marker;
-import com.jwetherell.augmented_reality.widget.VerticalTextView;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +31,7 @@ public class Demo extends AugmentedReality {
     private static final Map<String, NetworkDataSource> sources = new ConcurrentHashMap<String, NetworkDataSource>();
 
     private static Toast myToast = null;
-    private static VerticalTextView text = null;
+    private static TextView text = null;
 
     /**
      * {@inheritDoc}
@@ -44,7 +44,7 @@ public class Demo extends AugmentedReality {
         myToast = new Toast(getActivity().getApplicationContext());
         myToast.setGravity(Gravity.CENTER, 0, 0);
         // Creating our custom text view, and setting text/rotation
-        text = new VerticalTextView(getActivity().getApplicationContext());
+        text = new TextView(getActivity().getApplicationContext());
         LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         text.setLayoutParams(params);
         text.setBackgroundResource(android.R.drawable.toast_frame);
@@ -53,6 +53,7 @@ public class Demo extends AugmentedReality {
         myToast.setView(text);
         // Setting duration and displaying the toast
         myToast.setDuration(Toast.LENGTH_SHORT);
+
 
         // Local
         LocalDataSource localData = new LocalDataSource(this.getResources());
