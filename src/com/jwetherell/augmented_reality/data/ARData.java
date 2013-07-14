@@ -215,6 +215,14 @@ public abstract class ARData {
         }
     }
 
+    public static void clearMarkers() {
+        markerList.clear();
+        if (dirty.compareAndSet(false, true)) {
+            Log.v(TAG, "Setting DIRTY flag!");
+            cache.clear();
+        }
+    }
+
     /**
      * Get the Markers collection.
      * 
