@@ -30,14 +30,9 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
     private static final int MIN_TIME = 30 * 1000;
     private static final int MIN_DISTANCE = 10;
 
-    private static final float temp[] = new float[9]; // Temporary rotation
-                                                      // matrix in Android
-                                                      // format
-    private static final float rotation[] = new float[9]; // Final rotation
-                                                          // matrix in Android
-                                                          // format
-    private static final float grav[] = new float[3]; // Gravity (a.k.a
-                                                      // accelerometer data)
+    private static final float temp[] = new float[9]; // Temporary rotation matrix in Android format
+    private static final float rotation[] = new float[9]; // Final rotation matrix in Android format
+    private static final float grav[] = new float[3]; // Gravity (a.k.a accelerometer data)
     private static final float mag[] = new float[3]; // Magnetic
     /*
      * Using Matrix operations instead. This was way too inaccurate, private
@@ -57,8 +52,8 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
     private static Sensor sensorGrav = null;
     private static Sensor sensorMag = null;
     private static LocationManager locationMgr = null;
-    private static boolean portrait = false;
     private int displayRotation;
+    private boolean usingBuiltInLocation = true;
 
     /**
      * {@inheritDoc}
@@ -68,16 +63,6 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
         super.onCreate(savedInstanceState);
 
         displayRotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-        switch (displayRotation) {
-            case Surface.ROTATION_0:
-                portrait = true;
-                break;
-            default:
-                portrait = false;
-//            case Surface.ROTATION_90:
-//            case Surface.ROTATION_180:
-//            case Surface.ROTATION_270:
-        }
     }
 
     /**
@@ -119,19 +104,23 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
             sensorMgr.registerListener(this, sensorGrav, SensorManager.SENSOR_DELAY_NORMAL);
             sensorMgr.registerListener(this, sensorMag, SensorManager.SENSOR_DELAY_NORMAL);
 
+            if (usingBuiltInLocation) {
             locationMgr = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             locationMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+            }
 
             try {
 
-                try {
-                    Location gps = locationMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    Location network = locationMgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (gps != null) onLocationChanged(gps);
-                    else if (network != null) onLocationChanged(network);
-                    else onLocationChanged(ARData.hardFix);
-                } catch (Exception ex2) {
-                    onLocationChanged(ARData.hardFix);
+                if (usingBuiltInLocation) {
+                    try {
+                        Location gps = locationMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        Location network = locationMgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (gps != null) onLocationChanged(gps);
+                        else if (network != null) onLocationChanged(network);
+                        else onLocationChanged(ARData.hardFix);
+                    } catch (Exception ex2) {
+                        onLocationChanged(ARData.hardFix);
+                    }
                 }
 
                 gmf = new GeomagneticField((float) ARData.getCurrentLocation().getLatitude(), 
@@ -205,7 +194,9 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
             sensorMgr = null;
 
             try {
-                locationMgr.removeUpdates(this);
+                if (locationMgr != null) {
+                    locationMgr.removeUpdates(this);
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -351,5 +342,13 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
         if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD && accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
             Log.e(TAG, "Compass data unreliable");
         }
+    }
+
+    public boolean isUsingBuiltInLocation() {
+        return usingBuiltInLocation;
+    }
+
+    public void setUsingBuiltInLocation(boolean usingBuiltInLocation) {
+        this.usingBuiltInLocation = usingBuiltInLocation;
     }
 }
