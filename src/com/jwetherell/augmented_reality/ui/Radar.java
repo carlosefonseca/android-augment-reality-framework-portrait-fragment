@@ -63,7 +63,7 @@ public class Radar {
         Calculator.calcPitchBearing(ARData.getRotationMatrix());
         ARData.setAzimuth(Calculator.getAzimuth());
 
-        if (AugmentedReality.portrait) {
+        if (AugmentedReality.landscape) {
             canvas.save();
             canvas.translate(5, canvas.getHeight() - 5);
             canvas.rotate(-90);
@@ -76,7 +76,7 @@ public class Radar {
         drawRadarLines(canvas);
         drawRadarText(canvas);
 
-        if (AugmentedReality.portrait) {
+        if (AugmentedReality.landscape) {
             canvas.restore();
         }
     }

@@ -1,32 +1,28 @@
 package com.jwetherell.augmented_reality.activity;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.jwetherell.augmented_reality.common.LowPassFilter;
-import com.jwetherell.augmented_reality.common.Matrix;
-import com.jwetherell.augmented_reality.data.ARData;
-
-import android.app.Activity;
 import android.content.Context;
-import android.hardware.GeomagneticField;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.hardware.*;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.Surface;
+import com.jwetherell.augmented_reality.common.LowPassFilter;
+import com.jwetherell.augmented_reality.common.Matrix;
+import com.jwetherell.augmented_reality.data.ARData;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class extends Activity and processes sensor data and location data.
  * 
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
-public class SensorsActivity extends Activity implements SensorEventListener, LocationListener {
+public class SensorsActivity extends Fragment implements SensorEventListener, LocationListener {
 
     private static final String TAG = "SensorsActivity";
     private static final AtomicBoolean computing = new AtomicBoolean(false);
@@ -61,6 +57,8 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
     private static Sensor sensorGrav = null;
     private static Sensor sensorMag = null;
     private static LocationManager locationMgr = null;
+    private static boolean portrait = false;
+    private int displayRotation;
 
     /**
      * {@inheritDoc}
@@ -68,6 +66,18 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        displayRotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
+        switch (displayRotation) {
+            case Surface.ROTATION_0:
+                portrait = true;
+                break;
+            default:
+                portrait = false;
+//            case Surface.ROTATION_90:
+//            case Surface.ROTATION_180:
+//            case Surface.ROTATION_270:
+        }
     }
 
     /**
@@ -96,7 +106,7 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
                           -FloatMath.sin(neg90rads), 0f, FloatMath.cos(neg90rads));
 
         try {
-            sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
+            sensorMgr = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
 
             sensors = sensorMgr.getSensorList(Sensor.TYPE_ACCELEROMETER);
             if (sensors.size() > 0)
@@ -109,7 +119,7 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
             sensorMgr.registerListener(this, sensorGrav, SensorManager.SENSOR_DELAY_NORMAL);
             sensorMgr.registerListener(this, sensorMag, SensorManager.SENSOR_DELAY_NORMAL);
 
-            locationMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationMgr = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             locationMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
 
             try {
@@ -178,7 +188,7 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
      * {@inheritDoc}
      */
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
 
         try {
@@ -229,9 +239,17 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
         SensorManager.getRotationMatrix(temp, null, grav, mag);
 
         // Translate the rotation matrices from Y and -Z (landscape)
-        //SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_X, rotation);
-        //SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_X, SensorManager.AXIS_MINUS_Z, rotation);
-        SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_Z, rotation);
+        switch (displayRotation) {
+            case Surface.ROTATION_0:
+                SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Z, SensorManager.AXIS_Y, rotation);
+                break;
+            case Surface.ROTATION_90:
+                SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_Z, rotation);
+                break;
+            case Surface.ROTATION_270:
+            default:
+                Log.e(TAG, "Error:", new RuntimeException("Orientation not yet implemented"));
+        }
 
         /*
          * Using Matrix operations instead. This was way too inaccurate, 

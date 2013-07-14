@@ -1,36 +1,23 @@
 package com.jwetherell.augmented_reality.activity;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import com.jwetherell.augmented_reality.R;
-import com.jwetherell.augmented_reality.data.ARData;
-import com.jwetherell.augmented_reality.data.GooglePlacesDataSource;
-import com.jwetherell.augmented_reality.data.LocalDataSource;
-import com.jwetherell.augmented_reality.data.NetworkDataSource;
-import com.jwetherell.augmented_reality.data.TwitterDataSource;
-import com.jwetherell.augmented_reality.data.WikipediaDataSource;
-import com.jwetherell.augmented_reality.ui.Marker;
-import com.jwetherell.augmented_reality.widget.VerticalTextView;
-
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import com.jwetherell.augmented_reality.R;
+import com.jwetherell.augmented_reality.data.*;
+import com.jwetherell.augmented_reality.ui.Marker;
+import com.jwetherell.augmented_reality.widget.VerticalTextView;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * This class extends the AugmentedReality and is designed to be an example on
@@ -57,14 +44,14 @@ public class Demo extends AugmentedReality {
         super.onCreate(savedInstanceState);
 
         // Create toast
-        myToast = new Toast(getApplicationContext());
+        myToast = new Toast(getActivity().getApplicationContext());
         myToast.setGravity(Gravity.CENTER, 0, 0);
         // Creating our custom text view, and setting text/rotation
-        text = new VerticalTextView(getApplicationContext());
+        text = new VerticalTextView(getActivity().getApplicationContext());
         LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         text.setLayoutParams(params);
         text.setBackgroundResource(android.R.drawable.toast_frame);
-        text.setTextAppearance(getApplicationContext(), android.R.style.TextAppearance_Small);
+        text.setTextAppearance(getActivity().getApplicationContext(), android.R.style.TextAppearance_Small);
         text.setShadowLayer(2.75f, 0f, 0f, Color.parseColor("#BB000000"));
         myToast.setView(text);
         // Setting duration and displaying the toast
@@ -94,15 +81,6 @@ public class Demo extends AugmentedReality {
         updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
 
     /**
      * {@inheritDoc}
@@ -121,7 +99,7 @@ public class Demo extends AugmentedReality {
                 zoomLayout.setVisibility((showZoomBar) ? LinearLayout.VISIBLE : LinearLayout.GONE);
                 break;
             case R.id.exit:
-                finish();
+                getActivity().finish();
                 break;
         }
         return true;

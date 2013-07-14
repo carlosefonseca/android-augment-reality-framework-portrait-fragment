@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Augmented Reality in Portrait and on a Fragment"
+            android:id="@+id/textView"
+            android:layout_gravity="left|center_vertical"/>
+
+    <fragment
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:name="com.jwetherell.augmented_reality.activity.Demo"
+            android:id="@+id/fragment"
+            android:layout_gravity="left|center_vertical"
+            android:layout_weight="1"/>
+</LinearLayout>

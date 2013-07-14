@@ -1,7 +1,5 @@
 package com.jwetherell.augmented_reality.activity;
 
-import java.text.DecimalFormat;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -10,21 +8,20 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-
+import android.widget.TextView;
 import com.jwetherell.augmented_reality.camera.CameraSurface;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalSeekBar;
-import com.jwetherell.augmented_reality.widget.VerticalTextView;
+
+import java.text.DecimalFormat;
 
 /**
  * This class extends the SensorsActivity and is designed tie the AugmentedView
@@ -43,7 +40,7 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     protected static WakeLock wakeLock = null;
     protected static CameraSurface camScreen = null;
     protected static VerticalSeekBar myZoomBar = null;
-    protected static VerticalTextView endLabel = null;
+    protected static TextView endLabel = null;
     protected static LinearLayout zoomLayout = null;
     protected static AugmentedView augmentedView = null;
 
@@ -53,40 +50,40 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     public static final float TWENTY_PERCENT = 2f * TEN_PERCENT;
     public static final float EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
 
-    public static boolean portrait = false;
+    public static boolean landscape = false;
     public static boolean useCollisionDetection = false;
     public static boolean showRadar = true;
     public static boolean showZoomBar = true;
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-        camScreen = new CameraSurface(this);
-        setContentView(camScreen);
+        FrameLayout frameLayout = new FrameLayout(getActivity());
 
-        augmentedView = new AugmentedView(this);
+        camScreen = new CameraSurface(getActivity());
+        frameLayout.addView(camScreen);
+
+        augmentedView = new AugmentedView(getActivity());
         augmentedView.setOnTouchListener(this);
         LayoutParams augLayout = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        addContentView(augmentedView, augLayout);
+        frameLayout.addView(augmentedView, augLayout);
 
-        zoomLayout = new LinearLayout(this);
+        zoomLayout = new LinearLayout(getActivity());
         zoomLayout.setVisibility((showZoomBar) ? LinearLayout.VISIBLE : LinearLayout.GONE);
         zoomLayout.setOrientation(LinearLayout.VERTICAL);
         zoomLayout.setPadding(5, 5, 5, 5);
         zoomLayout.setBackgroundColor(ZOOMBAR_BACKGROUND_COLOR);
 
-        endLabel = new VerticalTextView(this);
+        endLabel = new TextView(getActivity());
         endLabel.setText(END_TEXT);
         endLabel.setTextColor(END_TEXT_COLOR);
         LinearLayout.LayoutParams zoomTextParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         zoomTextParams.gravity = Gravity.CENTER;
         zoomLayout.addView(endLabel, zoomTextParams);
 
-        myZoomBar = new VerticalSeekBar(this);
+        myZoomBar = new VerticalSeekBar(getActivity());
         myZoomBar.setMax(100);
         myZoomBar.setProgress(50);
         myZoomBar.setOnSeekBarChangeListener(myZoomBarOnSeekBarChangeListener);
@@ -95,12 +92,14 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
         zoomLayout.addView(myZoomBar, zoomBarParams);
 
         FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, Gravity.RIGHT);
-        addContentView(zoomLayout, frameLayoutParams);
+        frameLayout.addView(zoomLayout, frameLayoutParams);
 
         updateDataOnZoom();
 
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "DoNotDimScreen");
+
+        return frameLayout;
     }
 
     /**
@@ -197,7 +196,7 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
             }
         }
 
-        return super.onTouchEvent(me);
+        return getActivity().onTouchEvent(me);
     };
 
     protected void markerTouched(Marker marker) {

@@ -96,7 +96,7 @@ public class Calculator {
 
         tempMatrix.set(rotationMatrix);
         tempMatrix.transpose();
-        if (AugmentedReality.portrait) {
+        if (AugmentedReality.landscape) {
             looking.set(0, 1, 0);
         } else {
             looking.set(1, 0, 0);
