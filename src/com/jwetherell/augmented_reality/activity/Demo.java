@@ -38,6 +38,7 @@ public class Demo extends AugmentedReality {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setMaxZoom(20);
         super.onCreate(savedInstanceState);
 
         // Create toast
@@ -60,8 +61,8 @@ public class Demo extends AugmentedReality {
         ARData.addMarkers(localData.getMarkers());
 
         // Network
-        NetworkDataSource twitter = new TwitterDataSource(this.getResources());
-        sources.put("twitter", twitter);
+//        NetworkDataSource twitter = new TwitterDataSource(this.getResources());
+//        sources.put("twitter", twitter);
         NetworkDataSource wikipedia = new WikipediaDataSource(this.getResources());
         sources.put("wiki", wikipedia);
         NetworkDataSource googlePlaces = new GooglePlacesDataSource(this.getResources());

@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
  */
 public class Marker implements Comparable<Marker> {
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("@#");
+    protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("@#");
 
     private static final Vector locationVector = new Vector(0, 0, 0);
 
@@ -30,7 +30,7 @@ public class Marker implements Comparable<Marker> {
     private final Vector tmpLocationVector = new Vector();
     private final Vector locationXyzRelativeToCameraView = new Vector();
     private final float[] distanceArray = new float[1];
-    private final float[] locationArray = new float[3];
+    protected final float[] locationArray = new float[3];
 
     private float initialY = 0.0f;
 
@@ -38,18 +38,18 @@ public class Marker implements Comparable<Marker> {
 
     // Container for the circle or icon symbol
     protected PaintableObject gpsSymbol = null;
-    private volatile PaintablePosition symbolContainer = null;
+    protected volatile PaintablePosition symbolContainer = null;
 
     // Container for text
-    private PaintableBoxedText textBox = null;
-    private volatile PaintablePosition textContainer = null;
+    protected PaintableBoxedText textBox = null;
+    protected volatile PaintablePosition textContainer = null;
 
     // Unique identifier of Marker
-    private String name = null;
+    protected String name = null;
     // Marker's physical location (Lat, Lon, Alt)
     private final PhysicalLocation physicalLocation = new PhysicalLocation();
     // Distance from camera to PhysicalLocation in meters
-    private double distance = 0.0;
+    protected double distance = 0.0;
     // Is within the radar
     private volatile boolean isOnRadar = false;
     // Is in the camera's view
@@ -589,7 +589,7 @@ public class Marker implements Comparable<Marker> {
         symbolContainer.paint(canvas);
     }
 
-    private synchronized void drawText(Canvas canvas) {
+    protected synchronized void drawText(Canvas canvas) {
         if (canvas == null) throw new NullPointerException();
 
         String textStr = null;
@@ -601,8 +601,8 @@ public class Marker implements Comparable<Marker> {
         }
         float maxHeight = Math.round(canvas.getHeight() / 10f) + 1;
 
-        if (textBox == null) textBox = new PaintableBoxedText(textStr, Math.round(maxHeight / 2f) + 1, 300);
-        else textBox.set(textStr, Math.round(maxHeight / 2f) + 1, 300);
+        if (textBox == null) textBox = new PaintableBoxedText(textStr, Math.round(maxHeight / (AugmentedReality.landscape?2f:4f)) + 1, 300);
+        else textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape?2f:4f)) + 1, 300);
 
         getScreenPosition().get(locationArray);
         float x = locationArray[0];

@@ -14,7 +14,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository(url: "file:///Users/carlos/Beware/_/android-augment-reality-framework/mvn-repo")
-            pom.version = "carlosefonseca-1.1.4"
+            pom.version = "carlosefonseca-1.1.5"
             pom.groupId = "com.jwetherell"
         }
     }
