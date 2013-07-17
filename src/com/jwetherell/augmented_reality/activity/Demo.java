@@ -40,6 +40,8 @@ public class Demo extends AugmentedReality {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Radar.icon = BitmapFactory.decodeResource(getResources(), R.drawable.star);
+
         // Create toast
         myToast = new Toast(getActivity().getApplicationContext());
         myToast.setGravity(Gravity.CENTER, 0, 0);

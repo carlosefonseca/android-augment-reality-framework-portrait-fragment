@@ -16,6 +16,7 @@ import android.graphics.Canvas;
 public class PaintableRadarPoints extends PaintableObject {
 
     private final float[] locationArray = new float[3];
+    private PaintableIcon paintableIcon = null;
     private PaintablePoint paintablePoint = null;
     private PaintablePosition pointContainer = null;
 
@@ -34,11 +35,23 @@ public class PaintableRadarPoints extends PaintableObject {
             float x = locationArray[0] / scale;
             float y = locationArray[2] / scale;
             if ((x*x + y*y) < (Radar.RADIUS * Radar.RADIUS)) {
-                if (paintablePoint == null) paintablePoint = new PaintablePoint(pm.getColor(), true);
-                else paintablePoint.set(pm.getColor(), true);
 
-                if (pointContainer == null) pointContainer = new PaintablePosition(paintablePoint, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
-                else pointContainer.set(paintablePoint, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+                if (Radar.icon == null) {
+
+                    if (paintablePoint == null) paintablePoint = new PaintablePoint(pm.getColor(), true);
+                    else paintablePoint.set(pm.getColor(), true);
+
+                    if (pointContainer == null) pointContainer = new PaintablePosition(paintablePoint, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+                    else pointContainer.set(paintablePoint, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+
+                } else {
+
+                    if (paintableIcon == null) paintableIcon = new PaintableIcon(Radar.icon, Radar.icon.getWidth(), Radar.icon.getHeight());
+                    else paintableIcon.set(Radar.icon, Radar.icon.getWidth(), Radar.icon.getHeight());
+
+                    if (pointContainer == null) pointContainer = new PaintablePosition(paintableIcon, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+                    else pointContainer.set(paintableIcon, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+                }
 
                 pointContainer.paint(canvas);
             }

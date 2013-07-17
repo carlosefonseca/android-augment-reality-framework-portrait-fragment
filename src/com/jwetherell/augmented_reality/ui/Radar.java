@@ -1,5 +1,6 @@
 package com.jwetherell.augmented_reality.ui;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
@@ -22,7 +23,7 @@ import com.jwetherell.augmented_reality.ui.objects.PaintableText;
  */
 public class Radar {
 
-    public static final float RADIUS = 48;
+    public static final float RADIUS = 80;
 
     private static final int LINE_COLOR = Color.argb(150, 0, 0, 220);
     private static final float PAD_X = 10;
@@ -42,6 +43,8 @@ public class Radar {
 
     private static PaintableText paintableText = null;
     private static PaintablePosition paintedContainer = null;
+
+    public static Bitmap icon;
 
     public Radar() {
         if (leftRadarLine == null) leftRadarLine = new ScreenPosition();
