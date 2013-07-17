@@ -12,7 +12,7 @@ import android.graphics.Canvas;
  */
 public class IconMarker extends Marker {
 
-    private Bitmap bitmap = null;
+    protected Bitmap bitmap = null;
 
     public IconMarker(String name, double latitude, double longitude, double altitude, int color, Bitmap bitmap) {
         super(name, latitude, longitude, altitude, color);

@@ -34,7 +34,7 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     private static final String TAG = "AugmentedReality";
     private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
     private static final int ZOOMBAR_BACKGROUND_COLOR = Color.argb(125, 55, 55, 55);
-    private static final String END_TEXT = FORMAT.format(AugmentedReality.MAX_ZOOM) + " km";
+    private static String END_TEXT = FORMAT.format(AugmentedReality.MAX_ZOOM) + " km";
     private static final int END_TEXT_COLOR = Color.WHITE;
 
     protected static WakeLock wakeLock = null;
@@ -44,11 +44,11 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     protected static LinearLayout zoomLayout = null;
     protected static AugmentedView augmentedView = null;
 
-    public static final float MAX_ZOOM = 100; // in KM
-    public static final float ONE_PERCENT = MAX_ZOOM / 100f;
-    public static final float TEN_PERCENT = 10f * ONE_PERCENT;
-    public static final float TWENTY_PERCENT = 2f * TEN_PERCENT;
-    public static final float EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
+    public static float MAX_ZOOM = 10; // in KM
+    public static float ONE_PERCENT = MAX_ZOOM / 100f;
+    public static float TEN_PERCENT = 10f * ONE_PERCENT;
+    public static float TWENTY_PERCENT = 2f * TEN_PERCENT;
+    public static float EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
 
     public static boolean landscape = false;
     public static boolean useCollisionDetection = false;
@@ -100,6 +100,26 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
         wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "DoNotDimScreen");
 
         return frameLayout;
+    }
+
+    public float getMaxZoom() {
+        return MAX_ZOOM;
+    }
+
+    public void setMaxZoom(float maxZoomInKm) {
+        MAX_ZOOM = maxZoomInKm;
+        ONE_PERCENT = MAX_ZOOM / 100f;
+        TEN_PERCENT = 10f * ONE_PERCENT;
+        TWENTY_PERCENT = 2f * TEN_PERCENT;
+        EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
+        if (myZoomBar != null) {
+            updateDataOnZoom();
+            camScreen.invalidate();
+        }
+        END_TEXT = FORMAT.format(AugmentedReality.MAX_ZOOM) + " km";
+        if (endLabel != null) {
+            endLabel.setText(END_TEXT);
+        }
     }
 
     /**
