@@ -9,11 +9,7 @@ import com.jwetherell.augmented_reality.camera.CameraModel;
 import com.jwetherell.augmented_reality.common.Calculator;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.data.ScreenPosition;
-import com.jwetherell.augmented_reality.ui.objects.PaintableCircle;
-import com.jwetherell.augmented_reality.ui.objects.PaintableLine;
-import com.jwetherell.augmented_reality.ui.objects.PaintablePosition;
-import com.jwetherell.augmented_reality.ui.objects.PaintableRadarPoints;
-import com.jwetherell.augmented_reality.ui.objects.PaintableText;
+import com.jwetherell.augmented_reality.ui.objects.*;
 
 /**
  * This class will visually represent a radar screen with a radar radius and
@@ -23,7 +19,10 @@ import com.jwetherell.augmented_reality.ui.objects.PaintableText;
  */
 public class Radar {
 
-    public static final float RADIUS = 80;
+    public static float Density = 1;
+
+    public static final float RADIUS_DP = 80;
+    public static float RADIUS;
 
     private static final int LINE_COLOR = Color.argb(150, 0, 0, 220);
     private static final float PAD_X = 10;
@@ -45,10 +44,17 @@ public class Radar {
     private static PaintablePosition paintedContainer = null;
 
     public static Bitmap icon;
+    public static Bitmap circleImage;
+    public static boolean radarOnBottomRight = false;
 
     public Radar() {
         if (leftRadarLine == null) leftRadarLine = new ScreenPosition();
         if (rightRadarLine == null) rightRadarLine = new ScreenPosition();
+    }
+
+    public static void setDensity(float d) {
+        Radar.Density = d;
+        RADIUS = d * RADIUS_DP;
     }
 
     /**
@@ -70,16 +76,22 @@ public class Radar {
             canvas.save();
             canvas.translate(5, canvas.getHeight() - 5);
             canvas.rotate(-90);
+        } else if (radarOnBottomRight) {
+            canvas.save();
+            canvas.translate(canvas.getClipBounds().width() - 2 * (RADIUS + PAD_X),
+                             canvas.getClipBounds().height() - 2 * (RADIUS + PAD_Y));
         }
 
         // Update the radar graphics and text based upon the new pitch and
         // bearing
         drawRadarCircle(canvas);
         drawRadarPoints(canvas);
-        drawRadarLines(canvas);
+        if (circleImage == null) drawRadarLines(canvas);
         drawRadarText(canvas);
 
         if (AugmentedReality.landscape) {
+            canvas.restore();
+        } else if (radarOnBottomRight) {
             canvas.restore();
         }
     }
@@ -88,8 +100,13 @@ public class Radar {
         if (canvas == null) throw new NullPointerException();
 
         if (circleContainer == null) {
-            PaintableCircle paintableCircle = new PaintableCircle(RADAR_COLOR, RADIUS, true);
-            circleContainer = new PaintablePosition(paintableCircle, PAD_X + RADIUS, PAD_Y + RADIUS, 0, 1);
+            PaintableObject paintableObject;
+            if (circleImage != null) {
+                paintableObject = new PaintableIcon(circleImage, (int) (RADIUS * 2), ((int) (RADIUS * 2)));
+            } else {
+                paintableObject = new PaintableCircle(RADAR_COLOR, RADIUS, true);
+            }
+            circleContainer = new PaintablePosition(paintableObject, PAD_X + RADIUS, PAD_Y + RADIUS, 0, 1);
         }
         circleContainer.paint(canvas);
     }
@@ -125,7 +142,7 @@ public class Radar {
         if (rightLineContainer == null) {
             rightRadarLine.set(0, -RADIUS);
             rightRadarLine.rotate(CameraModel.DEFAULT_VIEW_ANGLE / 2);
-            rightRadarLine.add(PAD_X + RADIUS, PAD_Y + RADIUS);
+            leftRadarLine.add(PAD_X + RADIUS, PAD_Y + RADIUS);
 
             float rightX = rightRadarLine.getX() - (PAD_X + RADIUS);
             float rightY = rightRadarLine.getY() - (PAD_Y + RADIUS);
@@ -159,8 +176,8 @@ public class Radar {
     private void radarText(Canvas canvas, String txt, float x, float y, boolean bg) {
         if (canvas == null || txt == null) throw new NullPointerException();
 
-        if (paintableText == null) paintableText = new PaintableText(txt, TEXT_COLOR, TEXT_SIZE, bg);
-        else paintableText.set(txt, TEXT_COLOR, TEXT_SIZE, bg);
+        if (paintableText == null) paintableText = new PaintableText(txt, TEXT_COLOR, (int) (TEXT_SIZE * Density), bg);
+        else paintableText.set(txt, TEXT_COLOR, (int) (TEXT_SIZE * Density), bg);
 
         if (paintedContainer == null) paintedContainer = new PaintablePosition(paintableText, x, y, 0, 1);
         else paintedContainer.set(paintableText, x, y, 0, 1);

@@ -1,19 +1,17 @@
 package com.jwetherell.augmented_reality.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-
 import com.jwetherell.augmented_reality.R;
-import com.jwetherell.augmented_reality.ui.IconMarker;
 import com.jwetherell.augmented_reality.ui.Marker;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class extends DataSource to fetch data from Wikipedia.
@@ -79,7 +77,8 @@ public class WikipediaDataSource extends NetworkDataSource {
         Marker ma = null;
         if (jo.has("title") && jo.has("lat") && jo.has("lng") && jo.has("elevation")) {
             try {
-                ma = new IconMarker(jo.getString("title"), jo.getDouble("lat"), jo.getDouble("lng"), jo.getDouble("elevation"), Color.WHITE, icon);
+                ma = new Marker(jo.getString("title"), jo.getDouble("lat"), jo.getDouble("lng"), jo.getDouble("elevation"), Color.WHITE);
+//                ma = new IconMarker(jo.getString("title"), jo.getDouble("lat"), jo.getDouble("lng"), jo.getDouble("elevation"), Color.WHITE, icon);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

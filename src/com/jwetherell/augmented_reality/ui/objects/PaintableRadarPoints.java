@@ -36,7 +36,15 @@ public class PaintableRadarPoints extends PaintableObject {
             float y = locationArray[2] / scale;
             if ((x*x + y*y) < (Radar.RADIUS * Radar.RADIUS)) {
 
-                if (Radar.icon == null) {
+                if (pm.radarIcon != null) {
+
+                    if (paintableIcon == null) paintableIcon = new PaintableIcon(pm.radarIcon, pm.radarIcon.getWidth(), pm.radarIcon.getHeight());
+                    else paintableIcon.set(pm.radarIcon, pm.radarIcon.getWidth(), pm.radarIcon.getHeight());
+
+                    if (pointContainer == null) pointContainer = new PaintablePosition(paintableIcon, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+                    else pointContainer.set(paintableIcon, (x + Radar.RADIUS - 1), (y + Radar.RADIUS - 1), 0, 1);
+
+                } else if (Radar.icon == null) {
 
                     if (paintablePoint == null) paintablePoint = new PaintablePoint(pm.getColor(), true);
                     else paintablePoint.set(pm.getColor(), true);

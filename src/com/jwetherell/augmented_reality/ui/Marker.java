@@ -1,5 +1,6 @@
 package com.jwetherell.augmented_reality.ui;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
@@ -24,6 +25,7 @@ public class Marker implements Comparable<Marker> {
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("@#");
 
     private static final Vector locationVector = new Vector(0, 0, 0);
+    private static final String TAG = Marker.class.getName();
 
     private final Vector screenPositionVector = new Vector();
     private final Vector tmpVector = new Vector();
@@ -70,6 +72,9 @@ public class Marker implements Comparable<Marker> {
     private static boolean debugTouchZone = false;
     private PaintableBox touchBox = null;
     private volatile PaintablePosition touchPosition = null;
+
+    public Bitmap radarIcon;
+
 
     public Marker(String name, double latitude, double longitude, double altitude, int color) {
         set(name, latitude, longitude, altitude, color);
@@ -601,8 +606,9 @@ public class Marker implements Comparable<Marker> {
         }
         float maxHeight = Math.round(canvas.getHeight() / 10f) + 1;
 
-        if (textBox == null) textBox = new PaintableBoxedText(textStr, Math.round(maxHeight / (AugmentedReality.landscape?2f:4f)) + 1, 300);
-        else textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape?2f:4f)) + 1, 300);
+        if (textBox == null) {
+            textBox = getBoxedText(textStr, maxHeight, canvas.getHeight());
+        } else textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape ? 2f : 4f)) + 1, 300);
 
         getScreenPosition().get(locationArray);
         float x = locationArray[0];
@@ -621,6 +627,15 @@ public class Marker implements Comparable<Marker> {
         if (textContainer == null) textContainer = new PaintablePosition(textBox, x, y, currentAngle, 1);
         else textContainer.set(textBox, x, y, currentAngle, 1);
         textContainer.paint(canvas);
+    }
+
+    protected PaintableBoxedText getBoxedText(String textStr, float maxHeight, double canvasHeight) {
+        return new PaintableBoxedText(textStr,
+                                      Math.round(maxHeight / (AugmentedReality.landscape ? 2f : 4f)) + 1,
+                                      300,
+                                      Color.rgb(255, 255, 255),
+                                      Color.argb(128, 0, 0, 0),
+                                      Color.rgb(255, 255, 255));
     }
 
     /**

@@ -5,7 +5,7 @@ import android.graphics.Color;
 
 /**
  * This class extends PaintableObject to draw an outlined box.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class PaintableBox extends PaintableObject {
@@ -13,75 +13,86 @@ public class PaintableBox extends PaintableObject {
     private float width = 0, height = 0;
     private int borderColor = Color.rgb(255, 255, 255);
     private int backgroundColor = Color.argb(128, 0, 0, 0);
+    private boolean rounded = false;
 
     public PaintableBox(float width, float height) {
         this(width, height, Color.rgb(255, 255, 255), Color.argb(128, 0, 0, 0));
     }
 
-    public PaintableBox(float width, float height, int borderColor, int bgColor) {
-        set(width, height, borderColor, bgColor);
+    public PaintableBox(float width, float height, boolean rounded) {
+        this(width, height, Color.rgb(255, 255, 255), Color.argb(128, 0, 0, 0), rounded);
     }
+
+    public PaintableBox(float width, float height, int borderColor, int bgColor) {
+        set(width, height, borderColor, bgColor, rounded);
+    }
+
+    public PaintableBox(float width, float height, int borderColor, int bgColor, boolean rounded) {
+        set(width, height, borderColor, bgColor, rounded);
+    }
+
 
     /**
      * Set this objects parameters. This should be used instead of creating new
      * objects.
-     * 
-     * @param width
-     *            width of the box.
-     * @param height
-     *            height of the box.
+     *
+     * @param width  width of the box.
+     * @param height height of the box.
      */
     public void set(float width, float height) {
-        set(width, height, borderColor, backgroundColor);
+        set(width, height, borderColor, backgroundColor, rounded);
     }
 
     /**
      * Set this objects parameters. This should be used instead of creating new
      * objects.
-     * 
-     * @param width
-     *            width of the box.
-     * @param height
-     *            height of the box.
-     * @param borderColor
-     *            Color of the border.
-     * @param bgColor
-     *            Background color of the surrounding box.
+     *
+     * @param width       width of the box.
+     * @param height      height of the box.
+     * @param borderColor Color of the border.
+     * @param bgColor     Background color of the surrounding box.
      */
-    public void set(float width, float height, int borderColor, int bgColor) {
+    public void set(float width, float height, int borderColor, int bgColor, boolean rounded) {
         this.width = width;
         this.height = height;
         this.borderColor = borderColor;
         this.backgroundColor = bgColor;
+        this.rounded = rounded;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public void paint(Canvas canvas) {
         if (canvas == null) throw new NullPointerException();
 
-        setFill(true);
-        setColor(backgroundColor);
-        paintRect(canvas, 0, 0, width, height);
+        if (backgroundColor != Color.TRANSPARENT) {
+            setFill(true);
+            setColor(backgroundColor);
+            if (rounded) {
+                paintRoundedRect(canvas, 0, 0, width, height);
+            } else {
+                paintRect(canvas, 0, 0, width, height);
+            }
+        }
 
-        setFill(false);
-        setColor(borderColor);
-        paintRect(canvas, 0, 0, width, height);
+        if (borderColor != Color.TRANSPARENT) {
+            setFill(false);
+            setColor(borderColor);
+            if (rounded) {
+                paintRoundedRect(canvas, 0, 0, width, height);
+            } else {
+                paintRect(canvas, 0, 0, width, height);
+            }
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public float getWidth() {
         return width;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public float getHeight() {
         return height;
