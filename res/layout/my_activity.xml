@@ -8,7 +8,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Augmented Reality in Portrait and on a Fragment"
+            android:text="Augmented Reality in Portrait and on a Fragment Augmented Reality in Portrait and on a Fragment Augmented Reality in Portrait and on a Fragment"
             android:id="@+id/textView"
             android:layout_gravity="left|center_vertical"/>
 
@@ -19,4 +19,11 @@
             android:id="@+id/fragment"
             android:layout_gravity="left|center_vertical"
             android:layout_weight="1"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Augmented Reality in Portrait and on a Fragment Augmented Reality in Portrait and on a Fragment Augmented Reality in Portrait and on a Fragment"
+            android:id="@+id/textView"
+            android:layout_gravity="left|center_vertical"/>
+
 </LinearLayout>

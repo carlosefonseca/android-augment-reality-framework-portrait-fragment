@@ -1,5 +1,6 @@
 package com.jwetherell.augmented_reality.activity;
 
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -8,8 +9,10 @@ import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.data.*;
 import com.jwetherell.augmented_reality.ui.Marker;
+import com.jwetherell.augmented_reality.ui.Radar;
 
 import java.util.List;
 import java.util.Locale;
@@ -39,9 +42,10 @@ public class Demo extends AugmentedReality {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setMaxZoom(20);
+        Radar.circleImage = BitmapFactory.decodeResource(getResources(), R.drawable.radar_view);
         super.onCreate(savedInstanceState);
 
-        Radar.icon = BitmapFactory.decodeResource(getResources(), R.drawable.star);
+//        Radar.icon = BitmapFactory.decodeResource(getResources(), R.drawable.star);
 
         // Create toast
         myToast = new Toast(getActivity().getApplicationContext());

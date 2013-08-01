@@ -14,7 +14,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository(url: "file:///Users/carlos/Beware/_/android-augment-reality-framework/mvn-repo")
-            pom.version = "carlosefonseca-1.1.5"
+            pom.version = "carlosefonseca-1.1.9"
             pom.groupId = "com.jwetherell"
         }
     }
@@ -35,8 +35,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "17.0.0"
+    compileSdkVersion 18
+    buildToolsVersion "18.0.0"
 
     defaultConfig {
         minSdkVersion 8

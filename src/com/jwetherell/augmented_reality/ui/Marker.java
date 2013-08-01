@@ -1,5 +1,6 @@
 package com.jwetherell.augmented_reality.ui;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
@@ -70,6 +71,9 @@ public class Marker implements Comparable<Marker> {
     private static boolean debugTouchZone = false;
     private PaintableBox touchBox = null;
     private volatile PaintablePosition touchPosition = null;
+
+    public Bitmap radarIcon;
+
 
     public Marker(String name, double latitude, double longitude, double altitude, int color) {
         set(name, latitude, longitude, altitude, color);
@@ -601,8 +605,14 @@ public class Marker implements Comparable<Marker> {
         }
         float maxHeight = Math.round(canvas.getHeight() / 10f) + 1;
 
-        if (textBox == null) textBox = new PaintableBoxedText(textStr, Math.round(maxHeight / (AugmentedReality.landscape?2f:4f)) + 1, 300);
-        else textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape?2f:4f)) + 1, 300);
+        if (textBox == null) {
+            textBox = new PaintableBoxedText(textStr,
+                                             Math.round(maxHeight / (AugmentedReality.landscape ? 2f : 4f)) + 1,
+                                             300,
+                                             Color.rgb(255, 255, 255),
+                                             Color.argb(128, 0, 0, 0),
+                                             Color.rgb(255, 255, 255));
+        } else textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape ? 2f : 4f)) + 1, 300);
 
         getScreenPosition().get(locationArray);
         float x = locationArray[0];

@@ -6,7 +6,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnTouchListener;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 import com.jwetherell.augmented_reality.camera.CameraSurface;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
+import com.jwetherell.augmented_reality.ui.Radar;
 import com.jwetherell.augmented_reality.widget.VerticalSeekBar;
 
 import java.text.DecimalFormat;
@@ -33,11 +33,11 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
 
     private static final String TAG = "AugmentedReality";
     private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
+    private static final CharSequence START_TEXT = "0 m";
     private static final int ZOOMBAR_BACKGROUND_COLOR = Color.argb(125, 55, 55, 55);
     private static String END_TEXT = FORMAT.format(AugmentedReality.MAX_ZOOM) + " km";
     private static final int END_TEXT_COLOR = Color.WHITE;
 
-    protected static WakeLock wakeLock = null;
     protected static CameraSurface camScreen = null;
     protected static VerticalSeekBar myZoomBar = null;
     protected static TextView endLabel = null;
@@ -54,11 +54,14 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     public static boolean useCollisionDetection = false;
     public static boolean showRadar = true;
     public static boolean showZoomBar = true;
+    public static final boolean alternateLayout = true;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        if (alternateLayout)
+            Radar.radarOnBottomRight = true;
 
         FrameLayout frameLayout = new FrameLayout(getActivity());
 
@@ -87,19 +90,44 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
         myZoomBar.setMax(100);
         myZoomBar.setProgress(50);
         myZoomBar.setOnSeekBarChangeListener(myZoomBarOnSeekBarChangeListener);
-        LinearLayout.LayoutParams zoomBarParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
-        zoomBarParams.gravity = Gravity.CENTER_HORIZONTAL;
+        LinearLayout.LayoutParams zoomBarParams;
+        if (alternateLayout) {
+            zoomBarParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 0);
+            zoomBarParams.weight = 1;
+            zoomBarParams.gravity = Gravity.LEFT;
+        } else {
+            zoomBarParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            zoomBarParams.gravity = Gravity.CENTER_HORIZONTAL;
+        }
         zoomLayout.addView(myZoomBar, zoomBarParams);
 
-        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, Gravity.RIGHT);
-        frameLayout.addView(zoomLayout, frameLayoutParams);
+        if (alternateLayout) {
+            TextView startLabel = new TextView(getActivity());
+            startLabel.setText(START_TEXT);
+            startLabel.setTextColor(END_TEXT_COLOR);
+            zoomTextParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            zoomTextParams.gravity = Gravity.LEFT;
+            zoomLayout.addView(startLabel, zoomTextParams);
+        }
+        frameLayout.addView(zoomLayout, getZoomUILayoutParams());
 
         updateDataOnZoom();
 
         PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "DoNotDimScreen");
 
         return frameLayout;
+    }
+
+    private FrameLayout.LayoutParams getZoomUILayoutParams() {
+        if (alternateLayout) {
+            FrameLayout.LayoutParams zoomBarParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+                                                                                  LayoutParams.MATCH_PARENT,
+                                                                                  Gravity.LEFT);
+            zoomBarParams.bottomMargin = (int) (2 * Radar.RADIUS);
+            return zoomBarParams;
+        } else {
+            return new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, Gravity.RIGHT);
+        }
     }
 
     public float getMaxZoom() {
@@ -122,14 +150,20 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
         }
     }
 
+    public void setZoomRatio(float ratio) {
+        if (myZoomBar != null) {
+            myZoomBar.setProgress((int) (getMaxZoom() * ratio));
+            updateDataOnZoom();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void onResume() {
         super.onResume();
-
-        wakeLock.acquire();
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**
@@ -138,8 +172,7 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     @Override
     public void onPause() {
         super.onPause();
-
-        wakeLock.release();
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**

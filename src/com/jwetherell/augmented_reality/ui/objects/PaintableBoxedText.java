@@ -1,9 +1,10 @@
 package com.jwetherell.augmented_reality.ui.objects;
 
-import java.text.BreakIterator;
-import java.util.ArrayList;
 import android.graphics.Canvas;
 import android.graphics.Color;
+
+import java.text.BreakIterator;
+import java.util.ArrayList;
 
 
 /**
@@ -104,6 +105,13 @@ public class PaintableBoxedText extends PaintableObject {
         if (lineList == null) lineList = new ArrayList<String>();
         else lineList.clear();
 
+        String lastPart = null;
+        if (txt.contains("\n")) {
+            String[] split = txt.split("\\n");
+            txt = split[0];
+            lastPart = split[1];
+        }
+
         BreakIterator boundary = BreakIterator.getWordInstance();
         boundary.setText(txt);
 
@@ -128,6 +136,8 @@ public class PaintableBoxedText extends PaintableObject {
         }
         String line = txt.substring(start, prevEnd);
         lineList.add(line);
+
+        if (lastPart != null) lineList.add(lastPart);
 
         if (lines == null || lines.length != lineList.size()) lines = new String[lineList.size()];
         if (lineWidths == null || lineWidths.length != lineList.size()) lineWidths = new float[lineList.size()];
@@ -154,13 +164,16 @@ public class PaintableBoxedText extends PaintableObject {
 
         setFontSize(fontSize);
 
-        setFill(true);
-        setColor(backgroundColor);
-        paintRoundedRect(canvas, 0, 0, width, height);
-
-        setFill(false);
-        setColor(borderColor);
-        paintRoundedRect(canvas, 0, 0, width, height);
+        if (backgroundColor != Color.TRANSPARENT) {
+            setFill(true);
+            setColor(backgroundColor);
+            paintRoundedRect(canvas, 0, 0, width, height);
+        }
+        if (borderColor != Color.TRANSPARENT) {
+            setFill(false);
+            setColor(borderColor);
+            paintRoundedRect(canvas, 0, 0, width, height);
+        }
 
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
