@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * This class extends the View class and is designed draw the zoom bar, radar
  * circle, and markers on the View.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class AugmentedView extends View {
@@ -27,16 +27,15 @@ public class AugmentedView extends View {
     private static final float[] locationArray = new float[3];
     private static final List<Marker> cache = new ArrayList<Marker>();
     private static final TreeSet<Marker> updated = new TreeSet<Marker>();
-    private static final int COLLISION_ADJUSTMENT = 100;
+    private static final int COLLISION_ADJUSTMENT = 50;
+    public static final int MAX_MARKERS = 5;
 
     public AugmentedView(Context context) {
         super(context);
         Radar.setDensity(getResources().getDisplayMetrics().density);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected void onDraw(Canvas canvas) {
         if (canvas == null) return;
@@ -52,12 +51,13 @@ public class AugmentedView extends View {
                 m.update(canvas, 0, 0);
                 if (m.isOnRadar() && m.isInView()) cache.add(m);
             }
-            collection = cache;
+
+            // Only show MAX_MARKERS on the screen
+//            collection = cache.subList(0, Math.min(cache.size(), MAX_MARKERS));
 
             if (AugmentedReality.useCollisionDetection) adjustForCollisions(canvas, collection);
 
-            // Draw AR markers in reverse order since the last drawn should be
-            // the closest
+            // Draw AR markers in reverse order since the last drawn should be the closest
             ListIterator<Marker> iter = collection.listIterator(collection.size());
             while (iter.hasPrevious()) {
                 Marker marker = iter.previous();
@@ -75,13 +75,11 @@ public class AugmentedView extends View {
 
         // Update the AR markers for collisions
         for (Marker marker1 : collection) {
-            if (updated.contains(marker1) || !marker1.isInView())
-                continue;
+            if (updated.contains(marker1) || !marker1.isInView()) continue;
 
             int collisions = 1;
             for (Marker marker2 : collection) {
-                if (marker1.equals(marker2) || updated.contains(marker2) || !marker2.isInView())
-                    continue;
+                if (marker1.equals(marker2) || updated.contains(marker2) || !marker2.isInView()) continue;
 
                 if (marker1.isMarkerOnMarker(marker2)) {
                     marker2.getLocation().get(locationArray);

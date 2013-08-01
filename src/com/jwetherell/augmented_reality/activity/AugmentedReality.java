@@ -94,7 +94,8 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
         if (alternateLayout) {
             zoomBarParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 0);
             zoomBarParams.weight = 1;
-            zoomBarParams.gravity = Gravity.LEFT;
+            zoomBarParams.gravity = Gravity.CENTER_HORIZONTAL;
+//            zoomBarParams.gravity = Gravity.LEFT;
         } else {
             zoomBarParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
             zoomBarParams.gravity = Gravity.CENTER_HORIZONTAL;
@@ -106,7 +107,7 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
             startLabel.setText(START_TEXT);
             startLabel.setTextColor(END_TEXT_COLOR);
             zoomTextParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            zoomTextParams.gravity = Gravity.LEFT;
+            zoomTextParams.gravity = Gravity.CENTER_HORIZONTAL;
             zoomLayout.addView(startLabel, zoomTextParams);
         }
         frameLayout.addView(zoomLayout, getZoomUILayoutParams());

@@ -50,8 +50,7 @@ public abstract class PaintableObject {
      * Should we fill this paintable object.
      */
     public void setFill(boolean fill) {
-        if (fill) paint.setStyle(Paint.Style.FILL);
-        else paint.setStyle(Paint.Style.STROKE);
+        paint.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
     }
 
     /**
