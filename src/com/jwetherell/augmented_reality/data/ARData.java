@@ -1,24 +1,18 @@
 package com.jwetherell.augmented_reality.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import android.location.Location;
+import android.util.Log;
+import com.jwetherell.augmented_reality.common.Matrix;
+import com.jwetherell.augmented_reality.ui.Marker;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.jwetherell.augmented_reality.common.Matrix;
-import com.jwetherell.augmented_reality.ui.Marker;
-
-import android.location.Location;
-import android.util.Log;
-
 /**
  * Abstract class which should be used to set global data.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public abstract class ARData {
@@ -31,6 +25,7 @@ public abstract class ARData {
 
     /* defaulting to our place */
     public static final Location hardFix = new Location("ATL");
+
     static {
         hardFix.setLatitude(39.931261);
         hardFix.setLongitude(-75.051267);
@@ -51,9 +46,8 @@ public abstract class ARData {
 
     /**
      * Set the zoom level.
-     * 
-     * @param zoomLevel
-     *            String representing the zoom level.
+     *
+     * @param zoomLevel String representing the zoom level.
      */
     public static void setZoomLevel(String zoomLevel) {
         if (zoomLevel == null) throw new NullPointerException();
@@ -65,7 +59,7 @@ public abstract class ARData {
 
     /**
      * Get the zoom level.
-     * 
+     *
      * @return String representing the zoom level.
      */
     public static String getZoomLevel() {
@@ -76,9 +70,8 @@ public abstract class ARData {
 
     /**
      * Set the zoom progress.
-     * 
-     * @param zoomProgress
-     *            int representing the zoom progress.
+     *
+     * @param zoomProgress int representing the zoom progress.
      */
     public static void setZoomProgress(int zoomProgress) {
         synchronized (ARData.zoomProgressLock) {
@@ -94,7 +87,7 @@ public abstract class ARData {
 
     /**
      * Get the zoom progress.
-     * 
+     *
      * @return int representing the zoom progress.
      */
     public static int getZoomProgress() {
@@ -105,9 +98,8 @@ public abstract class ARData {
 
     /**
      * Set the radius of the radar screen.
-     * 
-     * @param radius
-     *            float representing the radar screen.
+     *
+     * @param radius float representing the radar screen.
      */
     public static void setRadius(float radius) {
         synchronized (ARData.radiusLock) {
@@ -117,7 +109,7 @@ public abstract class ARData {
 
     /**
      * Get the radius (in KM) of the radar screen.
-     * 
+     *
      * @return float representing the radar screen.
      */
     public static float getRadius() {
@@ -128,11 +120,9 @@ public abstract class ARData {
 
     /**
      * Set the current location.
-     * 
-     * @param currentLocation
-     *            Location to set.
-     * @throws NullPointerException
-     *             if Location param is NULL.
+     *
+     * @param currentLocation Location to set.
+     * @throws NullPointerException if Location param is NULL.
      */
     public static void setCurrentLocation(Location currentLocation) {
         if (currentLocation == null) throw new NullPointerException();
@@ -158,7 +148,7 @@ public abstract class ARData {
 
     /**
      * Get the current Location.
-     * 
+     *
      * @return Location representing the current location.
      */
     public static Location getCurrentLocation() {
@@ -169,9 +159,8 @@ public abstract class ARData {
 
     /**
      * Set the rotation matrix.
-     * 
-     * @param rotationMatrix
-     *            Matrix to use for rotation.
+     *
+     * @param rotationMatrix Matrix to use for rotation.
      */
     public static void setRotationMatrix(Matrix rotationMatrix) {
         synchronized (ARData.rotationMatrix) {
@@ -181,7 +170,7 @@ public abstract class ARData {
 
     /**
      * Get the rotation matrix.
-     * 
+     *
      * @return Matrix representing the rotation matrix.
      */
     public static Matrix getRotationMatrix() {
@@ -192,9 +181,8 @@ public abstract class ARData {
 
     /**
      * Add a List of Markers to our Collection.
-     * 
-     * @param markers
-     *            List of Markers to add.
+     *
+     * @param markers List of Markers to add.
      */
     public static void addMarkers(Collection<Marker> markers) {
         if (markers == null) throw new NullPointerException();
@@ -225,7 +213,7 @@ public abstract class ARData {
 
     /**
      * Get the Markers collection.
-     * 
+     *
      * @return Collection of Markers.
      */
     public static List<Marker> getMarkers() {
@@ -263,9 +251,8 @@ public abstract class ARData {
 
     /**
      * Set the current Azimuth.
-     * 
-     * @param azimuth
-     *            float representing the azimuth.
+     *
+     * @param azimuth float representing the azimuth.
      */
     public static void setAzimuth(float azimuth) {
         synchronized (azimuthLock) {
@@ -275,7 +262,7 @@ public abstract class ARData {
 
     /**
      * Get the current Azimuth.
-     * 
+     *
      * @return azimuth float representing the azimuth.
      */
     public static float getAzimuth() {
@@ -286,9 +273,8 @@ public abstract class ARData {
 
     /**
      * Set the current Roll.
-     * 
-     * @param roll
-     *            float representing the roll.
+     *
+     * @param roll float representing the roll.
      */
     public static void setRoll(float roll) {
         synchronized (rollLock) {
@@ -298,7 +284,7 @@ public abstract class ARData {
 
     /**
      * Get the current Roll.
-     * 
+     *
      * @return roll float representing the roll.
      */
     public static float getRoll() {

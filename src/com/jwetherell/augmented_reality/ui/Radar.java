@@ -14,19 +14,19 @@ import com.jwetherell.augmented_reality.ui.objects.*;
 /**
  * This class will visually represent a radar screen with a radar radius and
  * blips on the screen in their appropriate locations.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class Radar {
 
     public static float Density = 1;
 
-    public static final float RADIUS_DP = 80;
+    public static float RADIUS_DP = 80;
     public static float RADIUS;
 
     private static final int LINE_COLOR = Color.argb(150, 0, 0, 220);
     private static final float PAD_X = 10;
-    private static final float PAD_Y = 20;
+    private static final float PAD_Y = 10;
     private static final int RADAR_COLOR = Color.argb(100, 0, 0, 200);
     private static final int TEXT_COLOR = Color.rgb(255, 255, 255);
     private static final int TEXT_SIZE = 12;
@@ -45,7 +45,13 @@ public class Radar {
 
     public static Bitmap icon;
     public static Bitmap circleImage;
+    @Deprecated
     public static boolean radarOnBottomRight = false;
+    public static Position radarPosition = Position.TOP_LEFT;
+
+    public enum Position {
+        TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
+    }
 
     public Radar() {
         if (leftRadarLine == null) leftRadarLine = new ScreenPosition();
@@ -59,11 +65,9 @@ public class Radar {
 
     /**
      * Draw the radar on the given Canvas.
-     * 
-     * @param canvas
-     *            Canvas to draw on.
-     * @throws NullPointerException
-     *             if Canvas is NULL.
+     *
+     * @param canvas Canvas to draw on.
+     * @throws NullPointerException if Canvas is NULL.
      */
     public void draw(Canvas canvas) {
         if (canvas == null) throw new NullPointerException();
@@ -76,10 +80,21 @@ public class Radar {
             canvas.save();
             canvas.translate(5, canvas.getHeight() - 5);
             canvas.rotate(-90);
-        } else if (radarOnBottomRight) {
+        } else if (radarPosition != Position.TOP_LEFT) {
             canvas.save();
-            canvas.translate(canvas.getClipBounds().width() - 2 * (RADIUS + PAD_X),
-                             canvas.getClipBounds().height() - 2 * (RADIUS + PAD_Y));
+            switch (radarPosition) {
+
+                case TOP_RIGHT:
+                    canvas.translate(canvas.getClipBounds().width() - 2 * (RADIUS + PAD_X), 0);
+                    break;
+                case BOTTOM_LEFT:
+                    canvas.translate(0, canvas.getClipBounds().height() - 2 * (RADIUS + PAD_Y));
+                    break;
+                case BOTTOM_RIGHT:
+                    canvas.translate(canvas.getClipBounds().width() - 2 * (RADIUS + PAD_X),
+                                     canvas.getClipBounds().height() - 2 * (RADIUS + PAD_Y));
+                    break;
+            }
         }
 
         // Update the radar graphics and text based upon the new pitch and
@@ -91,7 +106,7 @@ public class Radar {
 
         if (AugmentedReality.landscape) {
             canvas.restore();
-        } else if (radarOnBottomRight) {
+        } else if (radarPosition != Position.TOP_LEFT) {
             canvas.restore();
         }
     }
@@ -116,8 +131,9 @@ public class Radar {
 
         if (radarPoints == null) radarPoints = new PaintableRadarPoints();
 
-        if (pointsContainer == null) pointsContainer = new PaintablePosition(radarPoints, PAD_X, PAD_Y, -ARData.getAzimuth(), 1);
-        else pointsContainer.set(radarPoints, PAD_X, PAD_Y, -ARData.getAzimuth(), 1);
+        if (pointsContainer == null) {
+            pointsContainer = new PaintablePosition(radarPoints, PAD_X, PAD_Y, -ARData.getAzimuth(), 1);
+        } else { pointsContainer.set(radarPoints, PAD_X, PAD_Y, -ARData.getAzimuth(), 1); }
 
         pointsContainer.paint(canvas);
     }
@@ -158,16 +174,15 @@ public class Radar {
         // Direction text
         int range = (int) (ARData.getAzimuth() / (360f / 16f));
         String dirTxt = "";
-        if (range == 15 || range == 0) dirTxt = "N";
-        else if (range == 1 || range == 2) dirTxt = "NE";
-        else if (range == 3 || range == 4) dirTxt = "E";
-        else if (range == 5 || range == 6) dirTxt = "SE";
-        else if (range == 7 || range == 8) dirTxt = "S";
-        else if (range == 9 || range == 10) dirTxt = "SW";
-        else if (range == 11 || range == 12) dirTxt = "W";
-        else if (range == 13 || range == 14) dirTxt = "NW";
+        if (range == 15 || range == 0) { dirTxt = "N"; } else if (range == 1 || range == 2) { dirTxt = "NE"; } else if (
+                range == 3 || range == 4) {
+            dirTxt = "E";
+        } else if (range == 5 || range == 6) { dirTxt = "SE"; } else if (range == 7 || range == 8) {
+            dirTxt = "S";
+        } else if (range == 9 || range == 10) { dirTxt = "SW"; } else if (range == 11 || range == 12) { dirTxt = "W"; } else if (
+                range == 13 || range == 14) { dirTxt = "NW"; }
         int bearing = (int) ARData.getAzimuth();
-        radarText(canvas, "" + bearing + ((char) 176) + " " + dirTxt, (PAD_X + RADIUS), (PAD_Y - 5), true);
+        radarText(canvas, "" + bearing + ((char) 176) + " " + dirTxt, (PAD_X + RADIUS), PAD_Y, true);
 
         // Zoom text
         radarText(canvas, formatDist(ARData.getRadius() * 1000), (PAD_X + RADIUS), (PAD_Y + RADIUS * 2 - 10), false);
@@ -176,11 +191,13 @@ public class Radar {
     private void radarText(Canvas canvas, String txt, float x, float y, boolean bg) {
         if (canvas == null || txt == null) throw new NullPointerException();
 
-        if (paintableText == null) paintableText = new PaintableText(txt, TEXT_COLOR, (int) (TEXT_SIZE * Density), bg);
-        else paintableText.set(txt, TEXT_COLOR, (int) (TEXT_SIZE * Density), bg);
+        if (paintableText == null) { paintableText = new PaintableText(txt, TEXT_COLOR, (int) (TEXT_SIZE * Density), bg); } else {
+            paintableText.set(txt, TEXT_COLOR, (int) (TEXT_SIZE * Density), bg);
+        }
 
-        if (paintedContainer == null) paintedContainer = new PaintablePosition(paintableText, x, y, 0, 1);
-        else paintedContainer.set(paintableText, x, y, 0, 1);
+        if (paintedContainer == null) { paintedContainer = new PaintablePosition(paintableText, x, y, 0, 1); } else {
+            paintedContainer.set(paintableText, x, y, 0, 1);
+        }
 
         paintedContainer.paint(canvas);
     }

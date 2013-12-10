@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 
 /**
  * This class extends PaintableObject and adds the ability to rotate and scale.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class PaintablePosition extends PaintableObject {
@@ -21,19 +21,13 @@ public class PaintablePosition extends PaintableObject {
     /**
      * Set this objects parameters. This should be used instead of creating new
      * objects.
-     * 
-     * @param drawObj
-     *            Object to set for this Position.
-     * @param x
-     *            X coordinate of the Position.
-     * @param y
-     *            Y coordinate of the Position.
-     * @param rotation
-     *            Rotation of the Position.
-     * @param scale
-     *            Scale of the Position.
-     * @throws NullPointerException
-     *             if PaintableObject is NULL.
+     *
+     * @param drawObj  Object to set for this Position.
+     * @param x        X coordinate of the Position.
+     * @param y        Y coordinate of the Position.
+     * @param rotation Rotation of the Position.
+     * @param scale    Scale of the Position.
+     * @throws NullPointerException if PaintableObject is NULL.
      */
     public void set(PaintableObject drawObj, float x, float y, float rotation, float scale) {
         if (drawObj == null) throw new NullPointerException();
@@ -49,11 +43,9 @@ public class PaintablePosition extends PaintableObject {
 
     /**
      * Move the object.
-     * 
-     * @param x
-     *            New X coordinate of the Position.
-     * @param y
-     *            New Y coordinate of the Position.
+     *
+     * @param x New X coordinate of the Position.
+     * @param y New Y coordinate of the Position.
      */
     public void move(float x, float y) {
         objX = x;
@@ -62,7 +54,7 @@ public class PaintablePosition extends PaintableObject {
 
     /**
      * X coordinate of the Object.
-     * 
+     *
      * @return float X coordinate.
      */
     public float getObjectsX() {
@@ -71,7 +63,7 @@ public class PaintablePosition extends PaintableObject {
 
     /**
      * Y coordinate of the Object.
-     * 
+     *
      * @return float Y coordinate.
      */
     public float getObjectsY() {
@@ -110,5 +102,14 @@ public class PaintablePosition extends PaintableObject {
     @Override
     public String toString() {
         return "< objX=" + objX + " objY=" + objY + " width=" + width + " height=" + height + " >";
+    }
+
+    public static PaintablePosition setup(PaintablePosition existing, PaintableObject target, float v, float v1, float currentAngle, int i) {
+        if (existing == null) {
+            existing = new PaintablePosition(target, v, v1, currentAngle, i);
+        } else {
+            existing.set(target, v, v1, currentAngle, i);
+        }
+        return existing;
     }
 }

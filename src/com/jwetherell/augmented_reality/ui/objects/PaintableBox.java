@@ -97,4 +97,13 @@ public class PaintableBox extends PaintableObject {
     public float getHeight() {
         return height;
     }
+
+    public static PaintableBox setup(PaintableBox existing, float side, float side1, int color, int color2, boolean b) {
+        if (existing == null) {
+            existing = new PaintableBox(side, side1, color, color2, b);
+        } else {
+            existing.set(side, side1, color, color2, b);
+        }
+        return existing;
+    }
 }

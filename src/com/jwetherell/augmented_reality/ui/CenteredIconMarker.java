@@ -1,8 +1,8 @@
 package com.jwetherell.augmented_reality.ui;
 
-import com.jwetherell.augmented_reality.ui.objects.PaintableIcon;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import com.jwetherell.augmented_reality.ui.objects.PaintableIcon;
 
 /**
  * This class extends Marker and draws an icon instead of a circle for it's
@@ -10,11 +10,11 @@ import android.graphics.Canvas;
  * 
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
-public class IconMarker extends CenteredMarker {
+public class CenteredIconMarker extends CenteredMarker {
 
     protected Bitmap bitmap = null;
 
-    public IconMarker(String name, double latitude, double longitude, double altitude, int color, Bitmap bitmap) {
+    public CenteredIconMarker(String name, double latitude, double longitude, double altitude, int color, Bitmap bitmap) {
         super(name, latitude, longitude, altitude, color);
         this.bitmap = bitmap;
     }

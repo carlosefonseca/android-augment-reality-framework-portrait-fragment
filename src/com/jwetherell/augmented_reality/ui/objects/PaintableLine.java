@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 
 /**
  * This class extends PaintableObject to draw a line.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class PaintableLine extends PaintableObject {
@@ -21,13 +21,10 @@ public class PaintableLine extends PaintableObject {
     /**
      * Set this objects parameters. This should be used instead of creating new
      * objects.
-     * 
-     * @param color
-     *            Color of the line.
-     * @param x
-     *            X coordinate of the line.
-     * @param y
-     *            Y coordinate of the line.
+     *
+     * @param color Color of the line.
+     * @param x     X coordinate of the line.
+     * @param y     Y coordinate of the line.
      */
     public void set(int color, float x, float y) {
         this.color = color;
@@ -61,5 +58,14 @@ public class PaintableLine extends PaintableObject {
     @Override
     public float getHeight() {
         return y;
+    }
+
+    public static PaintableLine setup(PaintableLine existing, int color, int i, float height) {
+        if (existing == null) {
+            existing = new PaintableLine(color, i, height);
+        } else {
+            existing.set(color, i, height);
+        }
+        return existing;
     }
 }

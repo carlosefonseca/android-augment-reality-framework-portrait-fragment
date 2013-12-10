@@ -30,7 +30,7 @@ public class Marker implements Comparable<Marker> {
     private final Vector screenPositionVector = new Vector();
     private final Vector tmpVector = new Vector();
     private final Vector tmpLocationVector = new Vector();
-    private final Vector locationXyzRelativeToCameraView = new Vector();
+    protected final Vector locationXyzRelativeToCameraView = new Vector();
     private final float[] distanceArray = new float[1];
     protected final float[] locationArray = new float[3];
 
@@ -53,9 +53,9 @@ public class Marker implements Comparable<Marker> {
     // Distance from camera to PhysicalLocation in meters
     protected double distance = 0.0;
     // Is within the radar
-    private volatile boolean isOnRadar = false;
+    protected volatile boolean isOnRadar = false;
     // Is in the camera's view
-    private volatile boolean isInView = false;
+    protected volatile boolean isInView = false;
     // Physical location's X, Y, Z relative to the camera's location
     private final Vector locationXyzRelativeToPhysicalLocation = new Vector();
     // Marker's default color
@@ -74,6 +74,7 @@ public class Marker implements Comparable<Marker> {
     private volatile PaintablePosition touchPosition = null;
 
     public Bitmap radarIcon;
+    private boolean closest;
 
 
     public Marker(String name, double latitude, double longitude, double altitude, int color) {
@@ -656,5 +657,13 @@ public class Marker implements Comparable<Marker> {
         if (marker == null || name == null) throw new NullPointerException();
 
         return name.equals(((Marker) marker).getName());
+    }
+
+    public void setClosest(boolean closest) {
+        this.closest = closest;
+    }
+
+    public boolean isClosest() {
+        return closest;
     }
 }

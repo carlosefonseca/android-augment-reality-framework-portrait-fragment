@@ -6,6 +6,7 @@ import android.view.View;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.ui.Radar;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +30,26 @@ public class AugmentedView extends View {
     private static final TreeSet<Marker> updated = new TreeSet<Marker>();
     private static final int COLLISION_ADJUSTMENT = 50;
     public static final int MAX_MARKERS = 5;
+    public static float density;
+    private Marker closer;
+    private Marker tmpMarker;
+    private float closestDist;
+    private float tmpDist;
+    public static int screenMiddle;
+    public static boolean computeClosestMarker = false;
+    private OnClosestMarkerListener onClosestMarkerListener;
 
     public AugmentedView(Context context) {
         super(context);
-        Radar.setDensity(getResources().getDisplayMetrics().density);
+        density = getResources().getDisplayMetrics().density;
+        Radar.setDensity(density);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onDraw(Canvas canvas) {
         if (canvas == null) return;
+        if (screenMiddle == 0) { screenMiddle = AugmentedReality.CANVAS_WIDTH / 2; }
 
         if (drawing.compareAndSet(false, true)) {
             // Get all the markers
@@ -47,9 +58,11 @@ public class AugmentedView extends View {
             // Prune all the markers that are out of the radar's radius (speeds
             // up drawing and collision detection)
             cache.clear();
-            for (Marker m : collection) {
-                m.update(canvas, 0, 0);
-                if (m.isOnRadar() && m.isInView()) cache.add(m);
+            int i;
+            for (i = 0; i < collection.size(); i++) {
+                tmpMarker = collection.get(i);
+                tmpMarker.update(canvas, 0, 0);
+                if (tmpMarker.isOnRadar() && tmpMarker.isInView()) cache.add(tmpMarker);
             }
 
             // Only show MAX_MARKERS on the screen
@@ -59,9 +72,27 @@ public class AugmentedView extends View {
 
             // Draw AR markers in reverse order since the last drawn should be the closest
             ListIterator<Marker> iter = collection.listIterator(collection.size());
+
+            if (computeClosestMarker) {
+                closestDist = Float.MAX_VALUE;
+                closer = null;
+                for (i = 0; i < cache.size(); i++) {
+                    tmpMarker = cache.get(i);
+                    tmpDist = Math.abs(screenMiddle - tmpMarker.getScreenPosition().getX());
+                    tmpMarker.setClosest(false);
+                    if (tmpDist < closestDist) {
+                        closer = tmpMarker;
+                        closestDist = tmpDist;
+                    }
+                }
+
+                if (closer != null) { closer.setClosest(true); }
+                if (onClosestMarkerListener != null) onClosestMarkerListener.onClosestMarker(closer);
+            }
+
             while (iter.hasPrevious()) {
-                Marker marker = iter.previous();
-                marker.draw(canvas);
+                tmpMarker = iter.previous();
+                tmpMarker.draw(canvas);
             }
 
             // Radar circle and radar markers
@@ -94,5 +125,18 @@ public class AugmentedView extends View {
             }
             updated.add(marker1);
         }
+    }
+
+    public void setOnClosestMarkerListener(OnClosestMarkerListener onClosestMarkerListener) {
+        this.onClosestMarkerListener = onClosestMarkerListener;
+        if (this.onClosestMarkerListener != null) computeClosestMarker = true;
+    }
+
+    public OnClosestMarkerListener getOnClosestMarkerListener() {
+        return onClosestMarkerListener;
+    }
+
+    public interface OnClosestMarkerListener {
+        public void onClosestMarker(@Nullable Marker marker);
     }
 }
