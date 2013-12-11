@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
  * This class will represent a physical location and will calculate it's
  * visibility and draw it's text and visual representation accordingly. This
  * should be extended if you want to change the way a Marker is viewed.
- * 
+ *
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class Marker implements Comparable<Marker> {
@@ -84,18 +84,13 @@ public class Marker implements Comparable<Marker> {
     /**
      * Set the objects parameters. This should be used instead of creating new
      * objects.
-     * 
-     * @param name
-     *            String representing the Marker.
-     * @param latitude
-     *            Latitude of the Marker in decimal format (example 39.931269).
-     * @param longitude
-     *            Longitude of the Marker in decimal format (example
-     *            -75.051261).
-     * @param altitude
-     *            Altitude of the Marker in meters (>0 is above sea level).
-     * @param color
-     *            Color of the Marker.
+     *
+     * @param name      String representing the Marker.
+     * @param latitude  Latitude of the Marker in decimal format (example 39.931269).
+     * @param longitude Longitude of the Marker in decimal format (example
+     *                  -75.051261).
+     * @param altitude  Altitude of the Marker in meters (>0 is above sea level).
+     * @param color     Color of the Marker.
      */
     public synchronized void set(String name, double latitude, double longitude, double altitude, int color) {
         if (name == null) throw new NullPointerException();
@@ -107,13 +102,12 @@ public class Marker implements Comparable<Marker> {
         this.isInView = false;
         this.locationXyzRelativeToPhysicalLocation.set(0, 0, 0);
         this.initialY = 0.0f;
-        if (altitude==0.0d) this.noAltitude = true;
-        else this.noAltitude = false;
+        if (altitude == 0.0d) { this.noAltitude = true; } else this.noAltitude = false;
     }
 
     /**
      * Get the name of the Marker.
-     * 
+     *
      * @return String representing the new of the Marker.
      */
     public synchronized String getName() {
@@ -122,7 +116,7 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Get the color of this Marker.
-     * 
+     *
      * @return int representing the Color of this Marker.
      */
     public synchronized int getColor() {
@@ -131,9 +125,9 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Get the distance of this Marker from the current GPS position.
-     * 
+     *
      * @return double representing the distance of this Marker from the current
-     *         GPS position.
+     * GPS position.
      */
     public synchronized double getDistance() {
         return this.distance;
@@ -142,7 +136,7 @@ public class Marker implements Comparable<Marker> {
     /**
      * Get the initial Y coordinate of this Marker. Used to reset after
      * collision detection.
-     * 
+     *
      * @return float representing the initial Y coordinate of this Marker.
      */
     public synchronized float getInitialY() {
@@ -152,7 +146,7 @@ public class Marker implements Comparable<Marker> {
     /**
      * Get the whether the Marker is inside the range (relative to slider on
      * view)
-     * 
+     *
      * @return True if Marker is inside the range.
      */
     public synchronized boolean isOnRadar() {
@@ -161,7 +155,7 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Get the whether the Marker is inside the camera's view
-     * 
+     *
      * @return True if Marker is inside the camera's view.
      */
     public synchronized boolean isInView() {
@@ -170,7 +164,7 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Get the position of the Marker in XYZ.
-     * 
+     *
      * @return Vector representing the position of the Marker.
      */
     public synchronized Vector getScreenPosition() {
@@ -180,7 +174,7 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Get the the location of the Marker in XYZ.
-     * 
+     *
      * @return Vector representing the location of the Marker.
      */
     public synchronized Vector getLocation() {
@@ -201,13 +195,10 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Update the matrices and visibility of the Marker.
-     * 
-     * @param canvas
-     *            Canvas to use in the CameraModel.
-     * @param addX
-     *            Adder to the X position.
-     * @param addY
-     *            Adder to the Y position.
+     *
+     * @param canvas Canvas to use in the CameraModel.
+     * @param addX   Adder to the X position.
+     * @param addY   Adder to the Y position.
      */
     public synchronized void update(Canvas canvas, float addX, float addY) {
         if (canvas == null) throw new NullPointerException();
@@ -239,14 +230,15 @@ public class Marker implements Comparable<Marker> {
         locationXyzRelativeToPhysicalLocation.get(locationArray);
         float x = locationArray[0] / scale;
         float y = locationArray[2] / scale; // z==y Switched on purpose
-        if ((x*x + y*y) < (Radar.RADIUS * Radar.RADIUS)) {
+//        Log.w(TAG, "x=" + x + " y=" + y + " r=" + Radar.RADIUS);
+        if ((x * x + y * y) < (Radar.RADIUS * Radar.RADIUS)) {
             isOnRadar = true;
         }
     }
 
     private synchronized void updateView() {
         isInView = false;
-        
+
         // If it's not on the radar, can't be in view3
         if (!isOnRadar) return;
 
@@ -282,9 +274,7 @@ public class Marker implements Comparable<Marker> {
             lrY += height;
         }
 
-        if (AugmentedReality.landscape &&
-            (lrX >= -1 && ulX <= cam.getWidth() && ulY >= -1 && lrY <= cam.getHeight())
-        ) {
+        if (AugmentedReality.landscape && (lrX >= -1 && ulX <= cam.getWidth() && ulY >= -1 && lrY <= cam.getHeight())) {
             isInView = true;
         } else if (lrX >= -1 && ulX <= cam.getWidth() && lrY >= -1 && ulY <= cam.getHeight()) {
             isInView = true;
@@ -301,11 +291,9 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Calculate the relative position of this Marker from the given Location.
-     * 
-     * @param location
-     *            Location to use in the relative position.
-     * @throws NullPointerException
-     *             if Location is NULL.
+     *
+     * @param location Location to use in the relative position.
+     * @throws NullPointerException if Location is NULL.
      */
     public synchronized void calcRelativePosition(Location location) {
         if (location == null) throw new NullPointerException();
@@ -316,7 +304,7 @@ public class Marker implements Comparable<Marker> {
         // noAltitude means that the elevation of the POI is not known 
         // and should be set to the users GPS altitude
         if (noAltitude) {
-        	physicalLocation.setAltitude(location.getAltitude());
+            physicalLocation.setAltitude(location.getAltitude());
         }
 
         // Compute the relative position vector from user position to POI
@@ -329,17 +317,19 @@ public class Marker implements Comparable<Marker> {
     private synchronized void updateDistance(Location location) {
         if (location == null) throw new NullPointerException();
 
-        Location.distanceBetween(physicalLocation.getLatitude(), physicalLocation.getLongitude(), location.getLatitude(), location.getLongitude(), distanceArray);
+        Location.distanceBetween(physicalLocation.getLatitude(),
+                                 physicalLocation.getLongitude(),
+                                 location.getLatitude(),
+                                 location.getLongitude(),
+                                 distanceArray);
         distance = distanceArray[0];
     }
 
     /**
      * Tell if the x/y position is on this marker (if the marker is visible)
-     * 
-     * @param x
-     *            float x value.
-     * @param y
-     *            float y value.
+     *
+     * @param x float x value.
+     * @param y float y value.
      * @return True if Marker is visible and x/y is on the marker.
      */
     public synchronized boolean handleClick(float x, float y) {
@@ -351,9 +341,8 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Determines if the marker is on this Marker.
-     * 
-     * @param marker
-     *            Marker to test for overlap.
+     *
+     * @param marker Marker to test for overlap.
      * @return True if the marker is on Marker.
      */
     public synchronized boolean isMarkerOnMarker(Marker marker) {
@@ -362,12 +351,10 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Determines if the marker is on this Marker.
-     * 
-     * @param marker
-     *            Marker to test for overlap.
-     * @param reflect
-     *            if True the Marker will call it's self recursively with the
-     *            opposite arguments.
+     *
+     * @param marker  Marker to test for overlap.
+     * @param reflect if True the Marker will call it's self recursively with the
+     *                opposite arguments.
      * @return True if the marker is on Marker.
      */
     private synchronized boolean isMarkerOnMarker(Marker marker, boolean reflect) {
@@ -454,13 +441,10 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Determines if the point is on this Marker.
-     * 
-     * @param xPoint
-     *            X point.
-     * @param yPoint
-     *            Y point.
-     * @param marker
-     *            Marker to determine if the point is on.
+     *
+     * @param xPoint X point.
+     * @param yPoint Y point.
+     * @param marker Marker to determine if the point is on.
      * @return True if the point is on Marker.
      */
     private synchronized boolean isPointOnMarker(float xPoint, float yPoint, Marker marker) {
@@ -510,11 +494,9 @@ public class Marker implements Comparable<Marker> {
 
     /**
      * Draw this Marker on the Canvas
-     * 
-     * @param canvas
-     *            Canvas to draw on.
-     * @throws NullPointerException
-     *             if the Canvas is NULL.
+     *
+     * @param canvas Canvas to draw on.
+     * @throws NullPointerException if the Canvas is NULL.
      */
     public synchronized void draw(Canvas canvas) {
         if (canvas == null) throw new NullPointerException();
@@ -540,8 +522,9 @@ public class Marker implements Comparable<Marker> {
         float currentAngle = 0;
         if (AugmentedReality.landscape) currentAngle = -90;
 
-        if (positionContainer == null) positionContainer = new PaintablePosition(positionPoint, locationArray[0], locationArray[1], currentAngle, 1);
-        else positionContainer.set(positionPoint, locationArray[0], locationArray[1], currentAngle, 1);
+        if (positionContainer == null) {
+            positionContainer = new PaintablePosition(positionPoint, locationArray[0], locationArray[1], currentAngle, 1);
+        } else { positionContainer.set(positionPoint, locationArray[0], locationArray[1], currentAngle, 1); }
 
         positionContainer.paint(canvas);
     }
@@ -551,8 +534,9 @@ public class Marker implements Comparable<Marker> {
 
         if (gpsSymbol == null) return;
 
-        if (touchBox == null) touchBox = new PaintableBox(getWidth(), getHeight(), Color.WHITE, Color.GREEN);
-        else touchBox.set(getWidth(), getHeight());
+        if (touchBox == null) { touchBox = new PaintableBox(getWidth(), getHeight(), Color.WHITE, Color.GREEN); } else {
+            touchBox.set(getWidth(), getHeight());
+        }
 
         getScreenPosition().get(locationArray);
         float x = locationArray[0];
@@ -568,8 +552,9 @@ public class Marker implements Comparable<Marker> {
         float currentAngle = 0;
         if (AugmentedReality.landscape) currentAngle = -90;
 
-        if (touchPosition == null) touchPosition = new PaintablePosition(touchBox, x, y, currentAngle, 1);
-        else touchPosition.set(touchBox, x, y, currentAngle, 1);
+        if (touchPosition == null) { touchPosition = new PaintablePosition(touchBox, x, y, currentAngle, 1); } else {
+            touchPosition.set(touchBox, x, y, currentAngle, 1);
+        }
         touchPosition.paint(canvas);
     }
 
@@ -590,8 +575,9 @@ public class Marker implements Comparable<Marker> {
         float currentAngle = 0;
         if (AugmentedReality.landscape) currentAngle = -90;
 
-        if (symbolContainer == null) symbolContainer = new PaintablePosition(gpsSymbol, x, y, currentAngle, 1);
-        else symbolContainer.set(gpsSymbol, x, y, currentAngle, 1);
+        if (symbolContainer == null) { symbolContainer = new PaintablePosition(gpsSymbol, x, y, currentAngle, 1); } else {
+            symbolContainer.set(gpsSymbol, x, y, currentAngle, 1);
+        }
         symbolContainer.paint(canvas);
     }
 
@@ -609,7 +595,7 @@ public class Marker implements Comparable<Marker> {
 
         if (textBox == null) {
             textBox = getBoxedText(textStr, maxHeight, canvas.getHeight());
-        } else textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape ? 2f : 4f)) + 1, 300);
+        } else { textBox.set(textStr, Math.round(maxHeight / (AugmentedReality.landscape ? 2f : 4f)) + 1, 300); }
 
         getScreenPosition().get(locationArray);
         float x = locationArray[0];
@@ -622,11 +608,11 @@ public class Marker implements Comparable<Marker> {
             x -= textBox.getWidth() / 2;
         }
         float currentAngle = 0;
-        if (AugmentedReality.landscape)
-            currentAngle = -90;
+        if (AugmentedReality.landscape) currentAngle = -90;
 
-        if (textContainer == null) textContainer = new PaintablePosition(textBox, x, y, currentAngle, 1);
-        else textContainer.set(textBox, x, y, currentAngle, 1);
+        if (textContainer == null) { textContainer = new PaintablePosition(textBox, x, y, currentAngle, 1); } else {
+            textContainer.set(textBox, x, y, currentAngle, 1);
+        }
         textContainer.paint(canvas);
     }
 

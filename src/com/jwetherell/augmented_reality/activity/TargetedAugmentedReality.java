@@ -177,11 +177,11 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         TEN_PERCENT = 10f * ONE_PERCENT;
         TWENTY_PERCENT = 2f * TEN_PERCENT;
         EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
-        if (myZoomBar != null) {
-            updateDataOnZoom();
-            camScreen.invalidate();
-        }
-        END_TEXT = FORMAT.format(TargetedAugmentedReality.MAX_ZOOM) + " km";
+//        if (myZoomBar != null) {
+        updateDataOnZoom();
+        if (camScreen != null) camScreen.invalidate();
+//        }
+        END_TEXT = FORMAT.format(MAX_ZOOM) + " km";
         if (endLabel != null) {
             endLabel.setText(END_TEXT);
         }

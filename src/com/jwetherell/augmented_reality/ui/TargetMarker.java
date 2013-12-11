@@ -82,4 +82,9 @@ public class TargetMarker extends CenteredIconMarker {
     public Bitmap getBitmap() {
         return otherBitmap != null ? otherBitmap : bitmap;
     }
+
+    @Override
+    public String toString() {
+        return "TargetMarker " + name + " [" + distance + "]";
+    }
 }
