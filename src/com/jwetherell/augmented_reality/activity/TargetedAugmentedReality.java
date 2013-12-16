@@ -35,6 +35,7 @@ import java.text.DecimalFormat;
 public class TargetedAugmentedReality extends AugmentedReality implements OnTouchListener, AugmentedView.OnClosestMarkerListener {
 
     private static final String TAG = "beware." + TargetedAugmentedReality.class.getSimpleName();
+    protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("@#");
     private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
     private static final CharSequence START_TEXT = "0 m";
     private static final int ZOOMBAR_BACKGROUND_COLOR = Color.argb(125, 55, 55, 55);
@@ -302,8 +303,20 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
     public void onClosestMarker(@Nullable Marker marker) {
         if (currentMarker == marker) return;
         currentMarker = (TargetMarker) marker;
-        pointDetails.setText(currentMarker != null ? currentMarker.getName() : "");
-        BitmapDrawable drawable = currentMarker != null ? new BitmapDrawable(getResources(), currentMarker.getBitmap()) : null;
+        final boolean ok = currentMarker != null;
+
+        pointDetails.setText(ok ? String.format("%s (%s)", currentMarker.getName(), formatDistance(currentMarker.getDistance())) : "");
+
+        BitmapDrawable drawable = ok ? new BitmapDrawable(getResources(), currentMarker.getBitmap()) : null;
         pointDetails.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+    }
+
+    public String formatDistance(double distance) {
+        if (distance < 1000.0) {
+            return DECIMAL_FORMAT.format(distance) + "m";
+        } else {
+            double d = distance / 1000.0;
+            return DECIMAL_FORMAT.format(d) + "km";
+        }
     }
 }
