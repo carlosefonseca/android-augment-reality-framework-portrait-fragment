@@ -27,8 +27,8 @@ public abstract class ARData {
     public static final Location hardFix = new Location("ATL");
 
     static {
-        hardFix.setLatitude(39.931261);
-        hardFix.setLongitude(-75.051267);
+        hardFix.setLatitude(0);
+        hardFix.setLongitude(0);
         hardFix.setAltitude(1);
     }
 
