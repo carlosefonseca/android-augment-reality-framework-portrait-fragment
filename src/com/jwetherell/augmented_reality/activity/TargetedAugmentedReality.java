@@ -11,9 +11,6 @@ import android.view.*;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.camera.CameraSurface;
@@ -21,7 +18,7 @@ import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.ui.Radar;
 import com.jwetherell.augmented_reality.ui.TargetMarker;
-import com.jwetherell.augmented_reality.widget.VerticalSeekBar;
+import com.jwetherell.augmented_reality.widget.AutoResizeTextView;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
@@ -37,28 +34,18 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
     private static final String TAG = "beware." + TargetedAugmentedReality.class.getSimpleName();
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("@#");
     private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
-    private static final CharSequence START_TEXT = "0 m";
-    private static final int ZOOMBAR_BACKGROUND_COLOR = Color.argb(125, 55, 55, 55);
     public static final int DETAILS_HEIGHT_DP = 80;
     public static final int DETAILS_TEXT_SIZE_SP = 20;
     public static final int TRANSPARENT_DARK = Color.parseColor("#99000000");
     public static float D;
     public static int MAX_CANVAS = -1;
     private static String END_TEXT = FORMAT.format(TargetedAugmentedReality.MAX_ZOOM) + " km";
-    private static final int END_TEXT_COLOR = Color.WHITE;
 
     protected static CameraSurface camScreen = null;
-    @Nullable
-    protected static VerticalSeekBar myZoomBar = null;
     protected static TextView endLabel = null;
-    protected static LinearLayout zoomLayout = null;
     protected static AugmentedView augmentedView = null;
 
     public static float MAX_ZOOM = 10; // in KM
-    public static float ONE_PERCENT = MAX_ZOOM / 100f;
-    public static float TEN_PERCENT = 10f * ONE_PERCENT;
-    public static float TWENTY_PERCENT = 2f * TEN_PERCENT;
-    public static float EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
 
     public static boolean landscape = false;
     public static boolean useCollisionDetection = false;
@@ -92,35 +79,7 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         grabCanvasSize(augmentedView);
         frameLayout.addView(augmentedView, augLayout);
 
-
-        if (showZoomBar) {
-            zoomLayout = new LinearLayout(getActivity());
-            zoomLayout.setVisibility((showZoomBar) ? LinearLayout.VISIBLE : LinearLayout.GONE);
-            zoomLayout.setOrientation(LinearLayout.VERTICAL);
-            zoomLayout.setPadding(5, 5, 5, 5);
-            zoomLayout.setBackgroundColor(ZOOMBAR_BACKGROUND_COLOR);
-
-            endLabel = new TextView(getActivity());
-            endLabel.setText(END_TEXT);
-            endLabel.setTextColor(END_TEXT_COLOR);
-            LinearLayout.LayoutParams zoomTextParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                                                                                     LayoutParams.WRAP_CONTENT);
-            zoomTextParams.gravity = Gravity.CENTER;
-            zoomLayout.addView(endLabel, zoomTextParams);
-
-            myZoomBar = new VerticalSeekBar(getActivity());
-            myZoomBar.setMax(100);
-            myZoomBar.setProgress(50);
-            myZoomBar.setOnSeekBarChangeListener(myZoomBarOnSeekBarChangeListener);
-            LinearLayout.LayoutParams zoomBarParams;
-            zoomBarParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-            zoomBarParams.gravity = Gravity.CENTER_HORIZONTAL;
-            zoomLayout.addView(myZoomBar, zoomBarParams);
-
-            frameLayout.addView(zoomLayout, getZoomUILayoutParams());
-        }
-
-        pointDetails = new TextView(getActivity());
+        pointDetails = new AutoResizeTextView(getActivity());
         pointDetails.setBackgroundColor(TRANSPARENT_DARK);
         pointDetails.setGravity(Gravity.CENTER_VERTICAL);
         pointDetails.setTextColor(Color.WHITE);
@@ -135,7 +94,6 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
 
         updateDataOnZoom();
 
-//        PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
         return frameLayout;
     }
 
@@ -164,34 +122,19 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         }
     }
 
-    private FrameLayout.LayoutParams getZoomUILayoutParams() {
-        return new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, Gravity.RIGHT);
-    }
-
+    @Override
     public float getMaxZoom() {
         return MAX_ZOOM;
     }
 
+    @Override
     public void setMaxZoom(float maxZoomInKm) {
         MAX_ZOOM = maxZoomInKm;
-        ONE_PERCENT = MAX_ZOOM / 100f;
-        TEN_PERCENT = 10f * ONE_PERCENT;
-        TWENTY_PERCENT = 2f * TEN_PERCENT;
-        EIGHTY_PERCENTY = 4f * TWENTY_PERCENT;
-//        if (myZoomBar != null) {
         updateDataOnZoom();
         if (camScreen != null) camScreen.invalidate();
-//        }
         END_TEXT = FORMAT.format(MAX_ZOOM) + " km";
         if (endLabel != null) {
             endLabel.setText(END_TEXT);
-        }
-    }
-
-    public void setZoomRatio(float ratio) {
-        if (myZoomBar != null) {
-            myZoomBar.setProgress((int) (getMaxZoom() * ratio));
-            updateDataOnZoom();
         }
     }
 
@@ -225,58 +168,15 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         }
     }
 
-    private OnSeekBarChangeListener myZoomBarOnSeekBarChangeListener = new OnSeekBarChangeListener() {
-
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            updateDataOnZoom();
-            camScreen.invalidate();
-        }
-
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            // Ignore
-        }
-
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            updateDataOnZoom();
-            camScreen.invalidate();
-        }
-    };
-
-    private static float calcZoomLevel() {
-        if (myZoomBar == null) return MAX_ZOOM;
-        int myZoomLevel = getProgress();
-        float myout = 0;
-
-        float percent = 0;
-        if (myZoomLevel <= 25) {
-            percent = myZoomLevel / 25f;
-            myout = ONE_PERCENT * percent;
-        } else if (myZoomLevel > 25 && myZoomLevel <= 50) {
-            percent = (myZoomLevel - 25f) / 25f;
-            myout = ONE_PERCENT + (TEN_PERCENT * percent);
-        } else if (myZoomLevel > 50 && myZoomLevel <= 75) {
-            percent = (myZoomLevel - 50f) / 25f;
-            myout = TEN_PERCENT + (TWENTY_PERCENT * percent);
-        } else {
-            percent = (myZoomLevel - 75f) / 25f;
-            myout = TWENTY_PERCENT + (EIGHTY_PERCENTY * percent);
-        }
-
-        return myout;
-    }
-
     /**
      * Called when the zoom bar has changed.
      */
+    @Override
     protected void updateDataOnZoom() {
-        float zoomLevel = calcZoomLevel();
+        float zoomLevel = MAX_ZOOM;
         ARData.setRadius(zoomLevel);
         ARData.setZoomLevel(FORMAT.format(zoomLevel));
-        ARData.setZoomProgress(getProgress());
-    }
-
-    private static int getProgress() {
-        return myZoomBar != null ? myZoomBar.getProgress() : 100;
+        ARData.setZoomProgress(100);
     }
 
     /**
@@ -295,6 +195,7 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         return getActivity().onTouchEvent(me);
     }
 
+    @Override
     protected void markerTouched(Marker marker) {
         Log.w(TAG, "markerTouched() not implemented.");
     }

@@ -203,15 +203,18 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
 
     private OnSeekBarChangeListener myZoomBarOnSeekBarChangeListener = new OnSeekBarChangeListener() {
 
+        @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             updateDataOnZoom();
             camScreen.invalidate();
         }
 
+        @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
             // Ignore
         }
 
+        @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             updateDataOnZoom();
             camScreen.invalidate();
@@ -264,7 +267,7 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
         }
 
         return getActivity().onTouchEvent(me);
-    };
+    }
 
     protected void markerTouched(Marker marker) {
         Log.w(TAG, "markerTouched() not implemented.");
