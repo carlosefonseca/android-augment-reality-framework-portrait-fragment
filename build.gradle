@@ -1,32 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
-    }
-}
 apply plugin: 'android-library'
-
-apply plugin: 'maven'
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "file:///Users/carlos/Beware/_/android-augment-reality-framework/mvn-repo")
-            pom.version = "carlosefonseca-1.1.10"
-            pom.groupId = "com.jwetherell"
-        }
-    }
-}
-
-tasks.withType(Compile) {
-    options.encoding = "UTF-8"
-}
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile 'com.android.support:support-v4:19.0.+'
