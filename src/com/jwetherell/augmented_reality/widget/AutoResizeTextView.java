@@ -17,6 +17,7 @@ import android.widget.TextView;
  * from http://stackoverflow.com/a/17782522/1069444
  */
 public class AutoResizeTextView extends TextView {
+    private static final String TAG = AutoResizeTextView.class.getSimpleName();
     private boolean mNeedsResize = true;
 
     private interface SizeTester {
@@ -27,7 +28,7 @@ public class AutoResizeTextView extends TextView {
          * text, it takes less space than {@code availableSpace}, > 0
          * otherwise
          */
-        public int onTestSize(int suggestedSize, RectF availableSpace);
+        public int onTestSize(int suggestedSize, RectF availableSpace, String text);
     }
 
     private RectF mTextRect = new RectF();
@@ -178,15 +179,14 @@ public class AutoResizeTextView extends TextView {
         mAvailableSpaceRect.right = mWidthLimit;
         mAvailableSpaceRect.bottom = heightLimit;
         super.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                          efficientTextSizeSearch(startSize, (int) mMaxTextSize, mSizeTester, mAvailableSpaceRect));
+                          efficientTextSizeSearch(startSize, (int) mMaxTextSize, mSizeTester, mAvailableSpaceRect, string));
     }
 
     private final SizeTester mSizeTester = new SizeTester() {
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
-        public int onTestSize(int suggestedSize, RectF availableSPace) {
+        public int onTestSize(int suggestedSize, RectF availableSPace, String text) {
             mPaint.setTextSize(suggestedSize);
-            String text = getText().toString();
             boolean singleline = getMaxLines() == 1;
             if (singleline) {
                 mTextRect.bottom = mPaint.getFontSpacing();
@@ -233,29 +233,28 @@ public class AutoResizeTextView extends TextView {
         adjustTextSize(getText().toString());
     }
 
-    private int efficientTextSizeSearch(int start, int end, SizeTester sizeTester, RectF availableSpace) {
+    private int efficientTextSizeSearch(int start, int end, SizeTester sizeTester, RectF availableSpace, String text) {
         if (!mEnableSizeCache) {
-            return binarySearch(start, end, sizeTester, availableSpace);
+            return binarySearch(start, end, sizeTester, availableSpace, text);
         }
-        String text = getText().toString();
         int key = text == null ? 0 : text.length();
         int size = mTextCachedSizes.get(key);
         if (size != 0) {
-            return size;
+            if (sizeTester.onTestSize(size, availableSpace, text) < 0) return size;
         }
-        size = binarySearch(start, end, sizeTester, availableSpace);
+        size = binarySearch(start, end, sizeTester, availableSpace, text);
         mTextCachedSizes.put(key, size);
         return size;
     }
 
-    private static int binarySearch(int start, int end, SizeTester sizeTester, RectF availableSpace) {
+    private static int binarySearch(int start, int end, SizeTester sizeTester, RectF availableSpace, String text) {
         int lastBest = start;
         int lo = start;
         int hi = end - 1;
         int mid = 0;
         while (lo <= hi) {
             mid = (lo + hi) >>> 1;
-            int midValCmp = sizeTester.onTestSize(mid, availableSpace);
+            int midValCmp = sizeTester.onTestSize(mid, availableSpace, text);
             if (midValCmp < 0) {
                 lastBest = lo;
                 lo = mid + 1;
@@ -273,19 +272,15 @@ public class AutoResizeTextView extends TextView {
     }
 
     @Override
-    protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
-        super.onTextChanged(text, start, before, after);
-        mNeedsResize = true;
-        requestLayout();
-        invalidate();
+    public void setText(CharSequence text, BufferType type) {
+        adjustTextSize((String) text);
+        super.setText(text, type);
     }
 
     @Override
-    protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
-        mTextCachedSizes.clear();
-        super.onSizeChanged(width, height, oldwidth, oldheight);
-        if (width != oldwidth || height != oldheight) {
-            reAdjust();
-        }
+    protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
+        mNeedsResize = true;
+        requestLayout();
+        invalidate();
     }
 }

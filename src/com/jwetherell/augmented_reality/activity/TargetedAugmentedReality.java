@@ -79,15 +79,16 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         grabCanvasSize(augmentedView);
         frameLayout.addView(augmentedView, augLayout);
 
+        int ten = (int) (10 * D);
         pointDetails = new AutoResizeTextView(getActivity());
         pointDetails.setBackgroundColor(TRANSPARENT_DARK);
         pointDetails.setGravity(Gravity.CENTER_VERTICAL);
         pointDetails.setTextColor(Color.WHITE);
         pointDetails.setTextSize(TypedValue.COMPLEX_UNIT_SP, DETAILS_TEXT_SIZE_SP);
-        int ten = (int) (10 * D);
+        ((AutoResizeTextView)pointDetails).setMinTextSize(10);
         pointDetails.setPadding(ten, ten, ten, ten);
         pointDetails.setCompoundDrawablePadding(ten);
-        pointDetails.setMaxLines(2);
+        pointDetails.setMaxLines(3);
         detailsHeight = (int) (DETAILS_HEIGHT_DP * D);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, detailsHeight, Gravity.BOTTOM);
         frameLayout.addView(pointDetails, lp);
@@ -202,17 +203,18 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
 
     @Override
     public void onClosestMarker(@Nullable Marker marker) {
+        //noinspection ObjectEquality
         if (currentMarker == marker) return;
         currentMarker = (TargetMarker) marker;
         final boolean ok = currentMarker != null;
 
-        pointDetails.setText(ok ? String.format("%s (%s)", currentMarker.getName(), formatDistance(currentMarker.getDistance())) : "");
-
         BitmapDrawable drawable = ok ? new BitmapDrawable(getResources(), currentMarker.getBitmap()) : null;
         pointDetails.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+
+        pointDetails.setText(ok ? String.format("%s (%s)", currentMarker.getName(), formatDistance(currentMarker.getDistance())) : "");
     }
 
-    public String formatDistance(double distance) {
+    public static String formatDistance(double distance) {
         if (distance < 1000.0) {
             return DECIMAL_FORMAT.format(distance) + "m";
         } else {
