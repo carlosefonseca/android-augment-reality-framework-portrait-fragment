@@ -1,4 +1,4 @@
-package com.jwetherell.augmented_reality.widget;
+package com.jwetherell.augmented_reality.activity;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 /**
  * from http://stackoverflow.com/a/17782522/1069444
  */
-public class AutoResizeTextView extends TextView {
+class AutoResizeTextView extends TextView {
     private static final String TAG = AutoResizeTextView.class.getSimpleName();
     private boolean mNeedsResize = true;
 

@@ -18,7 +18,6 @@ import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.ui.Radar;
 import com.jwetherell.augmented_reality.ui.TargetMarker;
-import com.jwetherell.augmented_reality.widget.AutoResizeTextView;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
