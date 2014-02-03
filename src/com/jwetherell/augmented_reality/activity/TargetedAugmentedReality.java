@@ -97,15 +97,30 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         return frameLayout;
     }
 
+    public static Bitmap createRecoloredBitmap(Bitmap source, int color) {
+        Bitmap mask = source.extractAlpha();
+
+        Bitmap targetBitmap = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(targetBitmap);
+
+        Paint paint = new Paint();
+        paint.setColor(color);
+        canvas.drawBitmap(mask, 0, 0, paint);
+
+        return targetBitmap;
+    }
+
     private Bitmap getRadarBitmap() {
+
         Bitmap immutableBmp = BitmapFactory.decodeResource(getResources(), R.drawable.radar_view_green);
-        Bitmap bitmap = immutableBmp.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(TRANSPARENT_DARK);
-        int r = canvas.getClipBounds().right / 2;
-        canvas.drawCircle(r, r, r, paint);
-        return bitmap;
+        return createRecoloredBitmap(immutableBmp, Color.WHITE);
+//        Bitmap bitmap = immutableBmp.copy(Bitmap.Config.ARGB_8888, true);
+//        Canvas canvas = new Canvas(bitmap);
+//        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//        paint.setColor(TRANSPARENT_DARK);
+//        int r = canvas.getClipBounds().right / 2;
+//        canvas.drawCircle(r, r, r, paint);
+//        return bitmap;
     }
 
     private void grabCanvasSize(final View view) {
