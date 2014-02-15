@@ -247,6 +247,8 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
                 SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_Z, rotation);
                 break;
             case Surface.ROTATION_270:
+                SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_MINUS_Y, SensorManager.AXIS_Z, rotation);
+                break;
             default:
                 Log.e(TAG, "Error:", new RuntimeException("Orientation not yet implemented"));
         }
