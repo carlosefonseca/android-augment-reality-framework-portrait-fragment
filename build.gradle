@@ -1,7 +1,11 @@
 apply plugin: 'android-library'
+apply plugin: 'maven'
+
+version = '1.0'
+group = "com.jwetherell.augmented_reality"
 
 dependencies {
-    compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.android.support:support-v4:19.+'
     compile 'com.intellij:annotations:5.1'
     compile fileTree(dir: 'libs', include: '*.jar')
 }
@@ -12,7 +16,9 @@ android {
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 18
+        targetSdkVersion 19
+        versionCode 1000
+        versionName = version
     }
 
     sourceSets {
@@ -24,6 +30,28 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            def mavenRepositoryUrl
+            if (!project.hasProperty('mvnRepoUrl')) {
+                println "Settings for mvnRepoUrl are missing/incomplete for ${project.name}"
+                mavenRepositoryUrl = mavenLocal().getUrl()
+            } else {
+                mavenRepositoryUrl = project.getProperties().get('mvnRepoUrl')
+            }
+            repository(url: mavenRepositoryUrl)
+
+            pom.project {
+                name 'Android Augmented Reality'
+                packaging 'aar'
+                description 'Custom Android AR Library'
+                url 'https://github.com/carlosefonseca/android-augment-reality-framework-portrait-fragment'
+            }
         }
     }
 }
