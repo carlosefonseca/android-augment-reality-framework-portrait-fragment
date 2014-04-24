@@ -1,8 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.9.+'
+    }
+}
+
 apply plugin: 'android-library'
 apply plugin: 'maven'
 
-version = '1.0'
+version = '1.0.1'
 group = "com.jwetherell.augmented_reality"
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     compile 'com.android.support:support-v4:19.+'
@@ -17,7 +30,7 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 1000
+        versionCode 1001
         versionName = version
     }
 
