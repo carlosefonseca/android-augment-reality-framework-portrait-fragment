@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
+import ar.com.carlosefonseca.common.utils.UnitUtils;
 import com.jwetherell.augmented_reality.activity.AugmentedReality;
 import com.jwetherell.augmented_reality.camera.CameraModel;
 import com.jwetherell.augmented_reality.common.Calculator;
@@ -25,8 +26,8 @@ public class Radar {
     public static float RADIUS;
 
     private static final int LINE_COLOR = Color.argb(150, 0, 0, 220);
-    private static final float PAD_X = 10;
-    private static final float PAD_Y = 10;
+    private static float PAD_X = 10;
+    private static float PAD_Y = 10;
     private static final int RADAR_COLOR = Color.argb(100, 0, 0, 200);
     private static final int TEXT_COLOR = Color.rgb(255, 255, 255);
     private static final int TEXT_SIZE = 12;
@@ -61,6 +62,8 @@ public class Radar {
     public static void setDensity(float d) {
         Radar.Density = d;
         RADIUS = d * RADIUS_DP;
+        PAD_X = 10 * d;
+        PAD_Y = 10 * d;
     }
 
     /**
@@ -185,7 +188,7 @@ public class Radar {
         radarText(canvas, "" + bearing + ((char) 176) + " " + dirTxt, (PAD_X + RADIUS), PAD_Y, true);
 
         // Zoom text
-        radarText(canvas, formatDist(ARData.getRadius() * 1000), (PAD_X + RADIUS), (PAD_Y + RADIUS * 2 - 10), false);
+        radarText(canvas, formatDist(ARData.getRadius() * 1000), (PAD_X + RADIUS), (PAD_Y + RADIUS * 2 - 10), true);
     }
 
     private void radarText(Canvas canvas, String txt, float x, float y, boolean bg) {
@@ -203,13 +206,14 @@ public class Radar {
     }
 
     private static String formatDist(float meters) {
-        if (meters < 1000) {
-            return ((int) meters) + "m";
-        } else if (meters < 10000) {
-            return formatDec(meters / 1000f, 1) + "km";
-        } else {
-            return ((int) (meters / 1000f)) + "km";
-        }
+        return UnitUtils.stringForDistance((int) meters);
+//        if (meters < 1000) {
+//            return ((int) meters) + "m";
+//        } else if (meters < 10000) {
+//            return formatDec(meters / 1000f, 1) + "km";
+//        } else {
+//            return ((int) (meters / 1000f)) + "km";
+//        }
     }
 
     private static String formatDec(float val, int dec) {

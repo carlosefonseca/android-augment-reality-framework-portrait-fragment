@@ -36,6 +36,10 @@ public class Demo extends AugmentedReality {
     private static Toast myToast = null;
     private static TextView text = null;
 
+    static {
+        imperial();
+    }
+
     /**
      * {@inheritDoc}
      */

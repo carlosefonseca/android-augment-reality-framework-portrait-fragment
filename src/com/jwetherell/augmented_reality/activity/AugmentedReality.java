@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import ar.com.carlosefonseca.common.utils.UnitUtils;
 import com.jwetherell.augmented_reality.camera.CameraSurface;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
@@ -58,6 +59,17 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
     public static boolean showZoomBar = true;
     public static final boolean alternateLayout = false;
 
+    public static void metric() {
+        UnitUtils.setSystem(UnitUtils.System.METRIC);
+        END_TEXT = UnitUtils.stringForDistance((int) AugmentedReality.MAX_ZOOM);
+        if (endLabel != null) endLabel.setText(END_TEXT);
+    }
+
+    public static void imperial() {
+        UnitUtils.setSystem(UnitUtils.System.IMPERIAL);
+        END_TEXT = UnitUtils.stringForDistance((int) AugmentedReality.MAX_ZOOM);
+        if (endLabel != null) endLabel.setText(END_TEXT);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -158,7 +170,8 @@ public class AugmentedReality extends SensorsActivity implements OnTouchListener
             updateDataOnZoom();
             camScreen.invalidate();
         }
-        END_TEXT = FORMAT.format(AugmentedReality.MAX_ZOOM) + " km";
+        //FORMAT.format(AugmentedReality.MAX_ZOOM) + " km";
+        END_TEXT = UnitUtils.stringForDistance((int) AugmentedReality.MAX_ZOOM);
         if (endLabel != null) {
             endLabel.setText(END_TEXT);
         }

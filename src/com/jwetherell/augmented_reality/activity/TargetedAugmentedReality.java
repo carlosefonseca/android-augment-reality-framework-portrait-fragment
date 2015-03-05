@@ -12,6 +12,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import ar.com.carlosefonseca.common.utils.UnitUtils;
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.camera.CameraSurface;
 import com.jwetherell.augmented_reality.data.ARData;
@@ -54,6 +55,17 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
     private int detailsHeight;
     private TargetMarker currentMarker;
 
+    public static void metric() {
+        UnitUtils.setSystem(UnitUtils.System.METRIC);
+        END_TEXT = UnitUtils.stringForDistance((int) TargetedAugmentedReality.MAX_ZOOM);
+        if (endLabel != null) endLabel.setText(END_TEXT);
+    }
+
+    public static void imperial() {
+        UnitUtils.setSystem(UnitUtils.System.IMPERIAL);
+        END_TEXT = UnitUtils.stringForDistance((int) TargetedAugmentedReality.MAX_ZOOM);
+        if (endLabel != null) endLabel.setText(END_TEXT);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -147,7 +159,8 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
         MAX_ZOOM = maxZoomInKm;
         updateDataOnZoom();
         if (camScreen != null) camScreen.invalidate();
-        END_TEXT = FORMAT.format(MAX_ZOOM) + " km";
+        END_TEXT = UnitUtils.stringForDistance((int) MAX_ZOOM);
+        //FORMAT.format(MAX_ZOOM) + " km";
         if (endLabel != null) {
             endLabel.setText(END_TEXT);
         }
@@ -229,11 +242,14 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
     }
 
     public static String formatDistance(double distance) {
+        return UnitUtils.stringForDistance((int) distance);
+/*
         if (distance < 1000.0) {
             return DECIMAL_FORMAT.format(distance) + "m";
         } else {
             double d = distance / 1000.0;
             return DECIMAL_FORMAT.format(d) + "km";
         }
+*/
     }
 }
