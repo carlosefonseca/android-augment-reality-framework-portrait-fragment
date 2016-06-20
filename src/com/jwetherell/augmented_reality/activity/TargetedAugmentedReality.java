@@ -1,27 +1,39 @@
 package com.jwetherell.augmented_reality.activity;
 
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import ar.com.carlosefonseca.common.utils.UnitUtils;
+
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.camera.CameraSurface;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.ui.Radar;
 import com.jwetherell.augmented_reality.ui.TargetMarker;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
+
+import ar.com.carlosefonseca.common.utils.UnitUtils;
 
 /**
  * This class extends the SensorsActivity and is designed tie the AugmentedView
@@ -42,7 +54,7 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
     private static String END_TEXT = FORMAT.format(TargetedAugmentedReality.MAX_ZOOM) + " km";
 
     protected static CameraSurface camScreen = null;
-    protected static TextView endLabel = null;
+    protected TextView endLabel = null;
     protected static AugmentedView augmentedView = null;
 
     public static float MAX_ZOOM = 10; // in KM
@@ -58,13 +70,13 @@ public class TargetedAugmentedReality extends AugmentedReality implements OnTouc
     public static void metric() {
         UnitUtils.setSystem(UnitUtils.System.METRIC);
         END_TEXT = UnitUtils.stringForDistance((int) TargetedAugmentedReality.MAX_ZOOM);
-        if (endLabel != null) endLabel.setText(END_TEXT);
+//        if (endLabel != null) endLabel.setText(END_TEXT);
     }
 
     public static void imperial() {
         UnitUtils.setSystem(UnitUtils.System.IMPERIAL);
         END_TEXT = UnitUtils.stringForDistance((int) TargetedAugmentedReality.MAX_ZOOM);
-        if (endLabel != null) endLabel.setText(END_TEXT);
+//        if (endLabel != null) endLabel.setText(END_TEXT);
     }
 
     @Override

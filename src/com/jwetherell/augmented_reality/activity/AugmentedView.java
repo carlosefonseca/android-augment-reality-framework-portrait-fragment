@@ -2,11 +2,12 @@ package com.jwetherell.augmented_reality.activity;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.annotation.Nullable;
 import android.view.View;
+
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.ui.Radar;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;

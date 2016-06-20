@@ -4,13 +4,20 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
-import ar.com.carlosefonseca.common.utils.UnitUtils;
 import com.jwetherell.augmented_reality.activity.AugmentedReality;
 import com.jwetherell.augmented_reality.camera.CameraModel;
 import com.jwetherell.augmented_reality.common.Calculator;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.data.ScreenPosition;
-import com.jwetherell.augmented_reality.ui.objects.*;
+import com.jwetherell.augmented_reality.ui.objects.PaintableCircle;
+import com.jwetherell.augmented_reality.ui.objects.PaintableIcon;
+import com.jwetherell.augmented_reality.ui.objects.PaintableLine;
+import com.jwetherell.augmented_reality.ui.objects.PaintableObject;
+import com.jwetherell.augmented_reality.ui.objects.PaintablePosition;
+import com.jwetherell.augmented_reality.ui.objects.PaintableRadarPoints;
+import com.jwetherell.augmented_reality.ui.objects.PaintableText;
+
+import ar.com.carlosefonseca.common.utils.UnitUtils;
 
 /**
  * This class will visually represent a radar screen with a radar radius and
@@ -26,8 +33,9 @@ public class Radar {
     public static float RADIUS;
 
     private static final int LINE_COLOR = Color.argb(150, 0, 0, 220);
-    private static float PAD_X = 10;
-    private static float PAD_Y = 10;
+    private static float PAD_X = 0;
+    private static float PAD_Y = 0;
+    public static float paddingY = 10;
     private static final int RADAR_COLOR = Color.argb(100, 0, 0, 200);
     private static final int TEXT_COLOR = Color.rgb(255, 255, 255);
     private static final int TEXT_SIZE = 12;
@@ -63,7 +71,12 @@ public class Radar {
         Radar.Density = d;
         RADIUS = d * RADIUS_DP;
         PAD_X = 10 * d;
-        PAD_Y = 10 * d;
+        PAD_Y = paddingY * d;
+    }
+
+    public static void setPaddingY(float paddingY) {
+        Radar.paddingY = paddingY;
+        PAD_Y = paddingY * Radar.Density;
     }
 
     /**

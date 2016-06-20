@@ -1,8 +1,8 @@
 package ar.com.carlosefonseca.common.utils;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -13,7 +13,8 @@ public final class UnitUtils {
     private static final String TAG = UnitUtils.class.getName();
     private static NumberFormat numberFormatter = new DecimalFormat("@#");
 
-    @Nullable static Localizer localizer;
+    @Nullable
+    static Localizer localizer;
 
     private static System mSystem;
     private static System mDefaultSystem = System.METRIC;
@@ -48,7 +49,7 @@ public final class UnitUtils {
         mDefaultSystem = System.METRIC;
     }
 
-    @NotNull
+    @NonNull
     public static System setNextSystem() {
         System system = UnitUtils.getSystem();
         double ordinal = 0;

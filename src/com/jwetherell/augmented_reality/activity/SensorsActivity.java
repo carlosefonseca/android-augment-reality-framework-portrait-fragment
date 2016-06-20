@@ -1,7 +1,11 @@
 package com.jwetherell.augmented_reality.activity;
 
 import android.content.Context;
-import android.hardware.*;
+import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -10,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Surface;
+
 import com.jwetherell.augmented_reality.common.LowPassFilter;
 import com.jwetherell.augmented_reality.common.Matrix;
 import com.jwetherell.augmented_reality.data.ARData;
@@ -48,12 +53,31 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
     private static GeomagneticField gmf = null;
     private static float smooth[] = new float[3];
     private static SensorManager sensorMgr = null;
-    private static List<Sensor> sensors = null;
     private static Sensor sensorGrav = null;
     private static Sensor sensorMag = null;
     private static LocationManager locationMgr = null;
     private int displayRotation;
     private boolean usingBuiltInLocation = true;
+
+    public static void getSensors(Context context) {
+        if (sensorMgr == null) sensorMgr = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+
+        List<Sensor> sensors;
+        if (sensorGrav == null) {
+            sensors = sensorMgr.getSensorList(Sensor.TYPE_ACCELEROMETER);
+            if (sensors.size() > 0) sensorGrav = sensors.get(0);
+        }
+
+        if (sensorMag == null) {
+            sensors = sensorMgr.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
+            if (sensors.size() > 0) sensorMag = sensors.get(0);
+        }
+    }
+
+    public static boolean isDeviceCompatible(Context context) {
+        getSensors(context);
+        return sensorGrav != null && sensorMag != null;
+    }
 
     /**
      * {@inheritDoc}
@@ -91,22 +115,16 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
                           -FloatMath.sin(neg90rads), 0f, FloatMath.cos(neg90rads));
 
         try {
-            sensorMgr = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
-
-            sensors = sensorMgr.getSensorList(Sensor.TYPE_ACCELEROMETER);
-            if (sensors.size() > 0)
-                sensorGrav = sensors.get(0);
-
-            sensors = sensorMgr.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
-            if (sensors.size() > 0)
-                sensorMag = sensors.get(0);
+            getSensors(getActivity());
+            if (sensorGrav == null) Log.w(TAG, "NO ACCELEROMETER");
+            if (sensorMag == null)  Log.w(TAG, "NO MAGNETIC FIELD SENSOR");
 
             sensorMgr.registerListener(this, sensorGrav, SensorManager.SENSOR_DELAY_NORMAL);
             sensorMgr.registerListener(this, sensorMag, SensorManager.SENSOR_DELAY_NORMAL);
 
             if (usingBuiltInLocation) {
-            locationMgr = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            locationMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+                locationMgr = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                locationMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
             }
 
             try {
@@ -172,6 +190,7 @@ public class SensorsActivity extends Fragment implements SensorEventListener, Lo
             }
         }
     }
+
 
     /**
      * {@inheritDoc}
